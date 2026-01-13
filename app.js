@@ -102,7 +102,6 @@ function render(scrollToToday = false) {
 
     const notes = document.createElement("textarea");
     notes.className = "dayNotes";
-    notes.placeholder = "Notes / tasks…";
     notes.value = localStorage.getItem(kDay(date)) || "";
 
     // grow initially + on input

@@ -1,239 +1,106 @@
-const $ = (id) => document.getElementById(id);
+const $ = id => document.getElementById(id);
 const statusEl = $("status");
 
-// Header controls
+let currentCalendar = "personal";
+let activeMonth = new Date();
+activeMonth.setDate(1);
+
 const monthTitleEl = $("monthTitle");
-const prevMonthBtn = $("prevMonth");
-const nextMonthBtn = $("nextMonth");
-const todayBtn = $("todayBtn");
-
-// Tabs
-const tabButtons = Array.from(document.querySelectorAll(".tab"));
-const panels = Array.from(document.querySelectorAll(".panel"));
-
-// Calendar
 const monthGridEl = $("monthGrid");
 const monthNotesEl = $("monthNotes");
 
-// Other tabs textareas
-const doAsapEl = $("doAsap");
-const doEventuallyEl = $("doEventually");
-const buyNowEl = $("buyNow");
-const buyEventuallyEl = $("buyEventually");
-const schoolEl = $("school");
-const workEl = $("work");
+const notesPersonal = $("notesPersonal");
+const notesWork = $("notesWork");
+const notesSchool = $("notesSchool");
 
-// ---------- Date helpers ----------
-function pad2(n){ return String(n).padStart(2,"0"); }
+const KEY = {
+  day: (cal, iso) => `planner:${cal}:day:${iso}`,
+  month: (cal, ym) => `planner:${cal}:month:${ym}`,
+  notes: cal => `planner:notes:${cal}`
+};
 
-function toISODate(d){
-  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-}
-
-function monthKey(d){ // YYYY-MM
-  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
-}
-
-function startOfMonth(d){
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
-
-function daysInMonth(d){
-  return new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
-}
-
-// Monday-start week index: Mon=0 ... Sun=6
-function mondayIndex(jsDay){ // jsDay: Sun=0..Sat=6
-  return (jsDay + 6) % 7;
-}
-
-// ---------- Storage keys ----------
-const KEY_GLOBAL = "planner:v2:global";
-const KEY_MONTH_PREFIX = "planner:v2:month:"; // + YYYY-MM
-const KEY_DAY_PREFIX = "planner:v2:day:";     // + YYYY-MM-DD
+function pad(n){ return String(n).padStart(2,"0"); }
+function iso(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function ym(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}`; }
 
 function saveStatus(){
-  if (!statusEl) return;
-  statusEl.textContent = `Saved: ${new Date().toLocaleTimeString()}`;
+  statusEl.textContent = `Saved ${new Date().toLocaleTimeString()}`;
 }
 
-// ---------- Global data (tabs) ----------
-function loadGlobal(){
-  const raw = localStorage.getItem(KEY_GLOBAL);
-  const data = raw ? JSON.parse(raw) : {
-    doAsap: "",
-    doEventually: "",
-    buyNow: "",
-    buyEventually: "",
-    school: "",
-    work: ""
-  };
-
-  if (doAsapEl) doAsapEl.value = data.doAsap ?? "";
-  if (doEventuallyEl) doEventuallyEl.value = data.doEventually ?? "";
-  if (buyNowEl) buyNowEl.value = data.buyNow ?? "";
-  if (buyEventuallyEl) buyEventuallyEl.value = data.buyEventually ?? "";
-  if (schoolEl) schoolEl.value = data.school ?? "";
-  if (workEl) workEl.value = data.work ?? "";
+function autoGrow(el){
+  el.style.height = "auto";
+  el.style.height = el.scrollHeight + "px";
 }
-
-function saveGlobal(){
-  const data = {
-    doAsap: doAsapEl ? doAsapEl.value : "",
-    doEventually: doEventuallyEl ? doEventuallyEl.value : "",
-    buyNow: buyNowEl ? buyNowEl.value : "",
-    buyEventually: buyEventuallyEl ? buyEventuallyEl.value : "",
-    school: schoolEl ? schoolEl.value : "",
-    work: workEl ? workEl.value : ""
-  };
-  localStorage.setItem(KEY_GLOBAL, JSON.stringify(data));
-  saveStatus();
-}
-
-function wireAutosave(el, fn){
-  if (!el) return;
-  el.addEventListener("input", () => {
-    window.clearTimeout(wireAutosave.t);
-    wireAutosave.t = window.setTimeout(fn, 250);
-  });
-}
-
-// ---------- Month notes ----------
-function loadMonthNotes(activeMonthDate){
-  if (!monthNotesEl) return;
-  const k = KEY_MONTH_PREFIX + monthKey(activeMonthDate);
-  const raw = localStorage.getItem(k);
-  monthNotesEl.value = raw ?? "";
-}
-
-function saveMonthNotes(activeMonthDate){
-  if (!monthNotesEl) return;
-  const k = KEY_MONTH_PREFIX + monthKey(activeMonthDate);
-  localStorage.setItem(k, monthNotesEl.value);
-  saveStatus();
-}
-
-// ---------- Day notes ----------
-function loadDayNote(iso){
-  const raw = localStorage.getItem(KEY_DAY_PREFIX + iso);
-  return raw ?? "";
-}
-
-function saveDayNote(iso, text){
-  localStorage.setItem(KEY_DAY_PREFIX + iso, text);
-  saveStatus();
-}
-
-// ---------- Calendar rendering ----------
-let activeMonth = new Date(); // today
-activeMonth.setHours(0,0,0,0);
-activeMonth = startOfMonth(activeMonth);
 
 function renderMonth(){
-  if (!monthTitleEl || !monthGridEl) return;
-
-  const label = activeMonth.toLocaleString(undefined, { month:"long", year:"numeric" });
-  monthTitleEl.textContent = label;
-
-  loadMonthNotes(activeMonth);
-
-  // Build a 6-week grid (42 cells) Monday-start
+  monthTitleEl.textContent = activeMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
   monthGridEl.innerHTML = "";
 
-  const first = startOfMonth(activeMonth);
-  const startOffset = mondayIndex(first.getDay()); // 0..6
+  const days = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1, 0).getDate();
 
-  // Grid starts at "first day of month minus offset"
-  const gridStart = new Date(first);
-  gridStart.setDate(first.getDate() - startOffset);
-
-  for(let i=0; i<42; i++){
-    const cellDate = new Date(gridStart);
-    cellDate.setDate(gridStart.getDate() + i);
-
-    const iso = toISODate(cellDate);
-    const inMonth = (cellDate.getMonth() === activeMonth.getMonth());
+  for(let d=1; d<=days; d++){
+    const date = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), d);
+    const dayISO = iso(date);
 
     const cell = document.createElement("div");
-    cell.className = "dayCell" + (inMonth ? "" : " outside");
-
-    const top = document.createElement("div");
-    top.className = "dayTop";
+    cell.className = "dayCell";
 
     const num = document.createElement("div");
     num.className = "dayNum";
-    num.textContent = cellDate.getDate();
+    num.textContent = d;
 
-    const badge = document.createElement("div");
-    badge.className = "badge";
-    const todayISO = toISODate(new Date());
-    badge.textContent = (iso === todayISO) ? "Today" : "";
-    if(!badge.textContent) badge.style.visibility = "hidden";
+    const ta = document.createElement("textarea");
+    ta.className = "dayNotes";
+    ta.value = localStorage.getItem(KEY.day(currentCalendar, dayISO)) || "";
+    autoGrow(ta);
 
-    top.appendChild(num);
-    top.appendChild(badge);
-
-    const notes = document.createElement("textarea");
-    notes.className = "dayNotes";
-    notes.value = loadDayNote(iso);
-
-    // Save on input (debounced per cell)
-    let t;
-    notes.addEventListener("input", () => {
-      window.clearTimeout(t);
-      t = window.setTimeout(() => saveDayNote(iso, notes.value), 200);
+    ta.addEventListener("input", () => {
+      autoGrow(ta);
+      localStorage.setItem(KEY.day(currentCalendar, dayISO), ta.value);
+      saveStatus();
     });
 
-    cell.appendChild(top);
-    cell.appendChild(notes);
+    cell.append(num, ta);
     monthGridEl.appendChild(cell);
   }
+
+  monthNotesEl.value = localStorage.getItem(KEY.month(currentCalendar, ym(activeMonth))) || "";
 }
 
-function goToday(){
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  activeMonth = startOfMonth(d);
-  renderMonth();
-}
+monthNotesEl.addEventListener("input", () => {
+  localStorage.setItem(KEY.month(currentCalendar, ym(activeMonth)), monthNotesEl.value);
+  saveStatus();
+});
 
-// ---------- Tabs ----------
-function setActiveTab(name){
-  tabButtons.forEach(btn => {
-    const is = btn.dataset.tab === name;
-    btn.classList.toggle("active", is);
-    btn.setAttribute("aria-selected", is ? "true" : "false");
+document.querySelectorAll(".calBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".calBtn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentCalendar = btn.dataset.cal;
+    renderMonth();
   });
-
-  panels.forEach(p => p.classList.toggle("active", p.id === `tab-${name}`));
-}
-
-tabButtons.forEach(btn => {
-  btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
 });
 
-// ---------- Wire up controls ----------
-if (prevMonthBtn) prevMonthBtn.addEventListener("click", () => {
-  activeMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth()-1, 1);
-  renderMonth();
+$("prevMonth").onclick = () => { activeMonth.setMonth(activeMonth.getMonth()-1); renderMonth(); };
+$("nextMonth").onclick = () => { activeMonth.setMonth(activeMonth.getMonth()+1); renderMonth(); };
+$("todayBtn").onclick = () => { activeMonth = new Date(); activeMonth.setDate(1); renderMonth(); };
+
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.onclick = () => {
+    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    btn.classList.add("active");
+    $(`tab-${btn.dataset.tab}`).classList.add("active");
+  };
 });
 
-if (nextMonthBtn) nextMonthBtn.addEventListener("click", () => {
-  activeMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1, 1);
-  renderMonth();
+[notesPersonal, notesWork, notesSchool].forEach((el, i)=>{
+  const key = ["personal","work","school"][i];
+  el.value = localStorage.getItem(KEY.notes(key)) || "";
+  el.addEventListener("input", ()=>{
+    localStorage.setItem(KEY.notes(key), el.value);
+    saveStatus();
+  });
 });
 
-if (todayBtn) todayBtn.addEventListener("click", goToday);
-
-// Autosave (global tabs)
-[
-  doAsapEl, doEventuallyEl, buyNowEl, buyEventuallyEl, schoolEl, workEl
-].forEach(el => wireAutosave(el, saveGlobal));
-
-// Month notes autosave
-wireAutosave(monthNotesEl, () => saveMonthNotes(activeMonth));
-
-// ---------- Init ----------
-loadGlobal();
 renderMonth();
-setActiveTab("calendar");

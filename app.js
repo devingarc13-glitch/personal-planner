@@ -162,7 +162,9 @@ function wireGlobal(id) {
   });
 }
 
-wireGlobal("notesGlobal");
+wireGlobal("notesPersonal");
+wireGlobal("notesWork");
+wireGlobal("notesSchool");
 wireGlobal("doAsap");
 wireGlobal("doEventually");
 wireGlobal("buyNow");

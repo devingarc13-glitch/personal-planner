@@ -3,72 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Personal Planner</title>
+  <title>Planner</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="top">
-    <div class="topRow">
-      <h1>Planner</h1>
 
-      <div class="monthControls">
-        <button id="prevMonth">◀</button>
-        <div id="monthTitle" class="monthTitle">Month YYYY</div>
-        <button id="nextMonth">▶</button>
-        <button id="todayBtn">Today</button>
-      </div>
+<header class="top">
+  <div class="topRow">
+    <h1>Planner</h1>
+
+    <div class="monthControls">
+      <button id="prevMonth">◀</button>
+      <div id="monthTitle" class="monthTitle">Month YYYY</div>
+      <button id="nextMonth">▶</button>
+      <button id="todayBtn">Today</button>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="calendar">Calendar</button>
+    <button class="tab" data-tab="notes">Notes</button>
+    <button class="tab" data-tab="todo">To-Do</button>
+    <button class="tab" data-tab="buy">Buy</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- CALENDAR -->
+  <section class="panel active" id="tab-calendar">
+    <div class="subtabs">
+      <button class="subtab active" data-cal="personal">Personal</button>
+      <button class="subtab" data-cal="work">Work</button>
+      <button class="subtab" data-cal="school">School</button>
     </div>
 
-    <nav class="tabs">
-      <button class="tab active" data-tab="calendar">Calendar</button>
-      <button class="tab" data-tab="notes">Notes</button>
-    </nav>
-  </header>
+    <div class="weekdays">
+      <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+    </div>
 
-  <main class="wrap">
+    <div id="monthGrid" class="monthGrid"></div>
 
-    <!-- CALENDAR TAB -->
-    <section class="panel active" id="tab-calendar">
-      <div class="calendarSwitch">
-        <button class="calBtn active" data-cal="personal">Personal</button>
-        <button class="calBtn" data-cal="work">Work</button>
-        <button class="calBtn" data-cal="school">School</button>
-      </div>
-
-      <section class="card">
-        <div class="weekdays">
-          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-        </div>
-        <div id="monthGrid" class="monthGrid"></div>
-      </section>
-
-      <section class="card">
-        <h2>Month Notes</h2>
-        <textarea id="monthNotes" class="area"></textarea>
-      </section>
+    <section class="card">
+      <h2>Month Notes</h2>
+      <textarea id="monthNotes" class="area"
+        placeholder="Goals, reminders, focus for this month…"></textarea>
     </section>
+  </section>
 
-    <!-- NOTES TAB -->
-    <section class="panel" id="tab-notes">
-      <section class="card">
-        <h2>Personal Notes</h2>
-        <textarea id="notesPersonal" class="area"></textarea>
-      </section>
-      <section class="card">
-        <h2>Work Notes</h2>
-        <textarea id="notesWork" class="area"></textarea>
-      </section>
-      <section class="card">
-        <h2>School Notes</h2>
-        <textarea id="notesSchool" class="area"></textarea>
-      </section>
+  <!-- NOTES -->
+  <section class="panel" id="tab-notes">
+    <section class="card">
+      <h2>Personal Notes</h2>
+      <textarea id="notes-personal" class="area"></textarea>
     </section>
+    <section class="card">
+      <h2>Work Notes</h2>
+      <textarea id="notes-work" class="area"></textarea>
+    </section>
+    <section class="card">
+      <h2>School Notes</h2>
+      <textarea id="notes-school" class="area"></textarea>
+    </section>
+  </section>
 
-    <footer class="bottom">
-      <span id="status">Saved locally.</span>
-    </footer>
-  </main>
-
-  <script src="app.js"></script>
-</body>
-</html>
+  <!-- TODO -->
+  <section class="panel" id="tab-todo">
+    <section class="card">
+      <h2>Do ASAP</h2>
+      <textarea id="doAsap" class="area"></textarea>
+    </section>
+    <section class="card">
+      <h2>Do Eventually</h2>
+      <textarea id="doEventually"

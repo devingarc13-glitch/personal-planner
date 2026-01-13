@@ -130,10 +130,15 @@ button:hover{ border-color: var(--accent); }
 }
 
 /* ===== Calendar grid ===== */
-.monthGrid{
+#monthGrid{
   display:grid;
   grid-template-columns: repeat(7, 1fr);
   gap:12px;
+  margin-top:10px;
+
+  /* KEY FIX: let rows grow when a day gets taller */
+  grid-auto-rows: minmax(160px, auto);
+  align-items: start;
 }
 
 .dayCell{

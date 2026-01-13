@@ -1,51 +1,88 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Planner</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<h1>Planner</h1>
+  <header class="top">
+    <div class="topRow">
+      <h1>Planner</h1>
 
-<div>
-  <button id="prevMonth">◀</button>
-  <span id="monthTitle">Month YYYY</span>
-  <button id="nextMonth">▶</button>
-  <button id="todayBtn">Today</button>
-</div>
+      <div class="controls">
+        <button id="prevMonth" type="button" aria-label="Previous month">◀</button>
+        <div id="monthTitle" class="monthTitle">Month YYYY</div>
+        <button id="nextMonth" type="button" aria-label="Next month">▶</button>
+        <button id="todayBtn" type="button">Today</button>
+      </div>
+    </div>
 
-<div>
-  <button class="tab active" data-tab="calendar">Calendar</button>
-  <button class="tab" data-tab="notes">Notes</button>
-  <button class="tab" data-tab="todo">To-Do</button>
-  <button class="tab" data-tab="buy">Buy</button>
-</div>
+    <nav class="tabs" role="tablist" aria-label="Planner tabs">
+      <button class="tab active" data-tab="calendar" role="tab" aria-selected="true">Calendar</button>
+      <button class="tab" data-tab="notes" role="tab" aria-selected="false">Notes</button>
+      <button class="tab" data-tab="todo" role="tab" aria-selected="false">To-Do</button>
+      <button class="tab" data-tab="buy" role="tab" aria-selected="false">Buy</button>
+    </nav>
+  </header>
 
-<section id="tab-calendar" class="panel active">
-  <div>
-    <button class="subtab active" data-cal="personal">Personal</button>
-    <button class="subtab" data-cal="work">Work</button>
-    <button class="subtab" data-cal="school">School</button>
-  </div>
+  <main class="wrap">
 
-  <div id="monthGrid"></div>
-  <textarea id="monthNotes" placeholder="Month notes..."></textarea>
-</section>
+    <!-- CALENDAR -->
+    <section id="tab-calendar" class="panel active" role="tabpanel">
+      <section class="card">
+        <div class="calendarType" aria-label="Calendar type">
+          <button class="subtab active" data-cal="personal" type="button">Personal</button>
+          <button class="subtab" data-cal="work" type="button">Work</button>
+          <button class="subtab" data-cal="school" type="button">School</button>
+        </div>
 
-<section id="tab-notes" class="panel">
-  <textarea id="notes-personal"></textarea>
-</section>
+        <div class="weekdays" aria-hidden="true">
+          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
 
-<section id="tab-todo" class="panel">
-  <textarea id="doAsap"></textarea>
-</section>
+        <div id="monthGrid" class="monthGrid" aria-label="Month calendar grid"></div>
+      </section>
 
-<section id="tab-buy" class="panel">
-  <textarea id="buyNow"></textarea>
-</section>
+      <section class="card">
+        <h2>Month Notes</h2>
+        <textarea id="monthNotes" class="area" placeholder="Goals, reminders, focus for this month…"></textarea>
+      </section>
+    </section>
 
-<script src="app.js"></script>
+    <!-- NOTES -->
+    <section id="tab-notes" class="panel" role="tabpanel">
+      <section class="card">
+        <h2>Notes</h2>
+        <textarea id="notesGlobal" class="area" placeholder="General notes (shared across all months)…"></textarea>
+      </section>
+    </section>
+
+    <!-- TODO -->
+    <section id="tab-todo" class="panel" role="tabpanel">
+      <section class="card">
+        <h2>To-Do</h2>
+        <textarea id="todoText" class="area" placeholder="To-do list… (you can use emojis like ✅ 🔥 🟦)"></textarea>
+      </section>
+    </section>
+
+    <!-- BUY -->
+    <section id="tab-buy" class="panel" role="tabpanel">
+      <section class="card">
+        <h2>Buy</h2>
+        <textarea id="buyText" class="area" placeholder="Shopping / ideas…"></textarea>
+      </section>
+    </section>
+
+    <footer class="bottom">
+      <span id="status">Saved locally.</span>
+    </footer>
+
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>

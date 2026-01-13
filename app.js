@@ -175,7 +175,6 @@ function renderMonth(){
 
     const notes = document.createElement("textarea");
     notes.className = "dayNotes";
-    notes.placeholder = "Notes / tasks…";
     notes.value = loadDayNote(iso);
 
     // Save on input (debounced per cell)

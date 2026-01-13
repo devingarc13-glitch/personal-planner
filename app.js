@@ -1,147 +1,146 @@
 const $ = (id) => document.getElementById(id);
-
-const dateEl = $("date");
-const todayBtn = $("todayBtn");
 const statusEl = $("status");
 
-const mainWinEl = $("mainWin");
-const todoInputEl = $("todoInput");
-const addTodoBtn = $("addTodoBtn");
-const todoListEl = $("todoList");
+// Header controls
+const monthTitleEl = $("monthTitle");
+const prevMonthBtn = $("prevMonth");
+const nextMonthBtn = $("nextMonth");
+const todayBtn = $("todayBtn");
 
-const asapEl = $("asap");
+// Tabs
+const tabButtons = Array.from(document.querySelectorAll(".tab"));
+const panels = Array.from(document.querySelectorAll(".panel"));
+
+// Calendar
+const monthGridEl = $("monthGrid");
+const monthNotesEl = $("monthNotes");
+
+// Other tabs textareas
+const doAsapEl = $("doAsap");
+const doEventuallyEl = $("doEventually");
 const buyNowEl = $("buyNow");
+const buyEventuallyEl = $("buyEventually");
 const schoolEl = $("school");
-const homeEl = $("home");
-const notesEl = $("notes");
+const workEl = $("work");
 
-function todayISO(){
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  return `${yyyy}-${mm}-${dd}`;
+// ---------- Date helpers ----------
+function pad2(n){ return String(n).padStart(2,"0"); }
+
+function toISODate(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
 }
 
-function keyFor(date){
-  return `planner:v1:${date}`;
+function monthKey(d){ // YYYY-MM
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}`;
 }
 
-function load(date){
-  const raw = localStorage.getItem(keyFor(date));
-  const data = raw ? JSON.parse(raw) : {
-    mainWin: "",
-    todos: [],
-    asap: "",
-    buyNow: "",
-    school: "",
-    home: "",
-    notes: ""
-  };
-
-  mainWinEl.value = data.mainWin;
-  asapEl.value = data.asap;
-  buyNowEl.value = data.buyNow;
-  schoolEl.value = data.school;
-  homeEl.value = data.home;
-  notesEl.value = data.notes;
-
-  renderTodos(data.todos);
+function startOfMonth(d){
+  return new Date(d.getFullYear(), d.getMonth(), 1);
 }
 
-function save(){
-  const date = dateEl.value;
-  if(!date) return;
+function daysInMonth(d){
+  return new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+}
 
-  const data = {
-    mainWin: mainWinEl.value,
-    todos: readTodos(),
-    asap: asapEl.value,
-    buyNow: buyNowEl.value,
-    school: schoolEl.value,
-    home: homeEl.value,
-    notes: notesEl.value
-  };
+// Monday-start week index: Mon=0 ... Sun=6
+function mondayIndex(jsDay){ // jsDay: Sun=0..Sat=6
+  return (jsDay + 6) % 7;
+}
 
-  localStorage.setItem(keyFor(date), JSON.stringify(data));
+// ---------- Storage keys ----------
+const KEY_GLOBAL = "planner:v2:global";
+const KEY_MONTH_PREFIX = "planner:v2:month:"; // + YYYY-MM
+const KEY_DAY_PREFIX = "planner:v2:day:";     // + YYYY-MM-DD
+
+function saveStatus(){
   statusEl.textContent = `Saved: ${new Date().toLocaleTimeString()}`;
 }
 
-function renderTodos(todos){
-  todoListEl.innerHTML = "";
-  todos.forEach((t, i) => {
-    const li = document.createElement("li");
-    if(t.done) li.classList.add("done");
+// ---------- Global data (tabs) ----------
+function loadGlobal(){
+  const raw = localStorage.getItem(KEY_GLOBAL);
+  const data = raw ? JSON.parse(raw) : {
+    doAsap: "",
+    doEventually: "",
+    buyNow: "",
+    buyEventually: "",
+    school: "",
+    work: ""
+  };
 
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.checked = !!t.done;
-    cb.addEventListener("change", () => {
-      const items = readTodos();
-      items[i].done = cb.checked;
-      renderTodos(items);
-      save();
-    });
-
-    const span = document.createElement("span");
-    span.textContent = t.text;
-
-    const del = document.createElement("button");
-    del.type = "button";
-    del.textContent = "Delete";
-    del.addEventListener("click", () => {
-      const items = readTodos();
-      items.splice(i, 1);
-      renderTodos(items);
-      save();
-    });
-
-    li.append(cb, span, del);
-    todoListEl.appendChild(li);
-  });
+  doAsapEl.value = data.doAsap ?? "";
+  doEventuallyEl.value = data.doEventually ?? "";
+  buyNowEl.value = data.buyNow ?? "";
+  buyEventuallyEl.value = data.buyEventually ?? "";
+  schoolEl.value = data.school ?? "";
+  workEl.value = data.work ?? "";
 }
 
-function readTodos(){
-  const items = [];
-  todoListEl.querySelectorAll("li").forEach(li => {
-    const text = li.querySelector("span")?.textContent ?? "";
-    const done = li.classList.contains("done") || li.querySelector("input")?.checked;
-    items.push({ text, done: !!done });
-  });
-  return items;
+function saveGlobal(){
+  const data = {
+    doAsap: doAsapEl.value,
+    doEventually: doEventuallyEl.value,
+    buyNow: buyNowEl.value,
+    buyEventually: buyEventuallyEl.value,
+    school: schoolEl.value,
+    work: workEl.value
+  };
+  localStorage.setItem(KEY_GLOBAL, JSON.stringify(data));
+  saveStatus();
 }
 
-function addTodo(){
-  const text = todoInputEl.value.trim();
-  if(!text) return;
-
-  const existing = readTodos();
-  existing.push({ text, done:false });
-  renderTodos(existing);
-  todoInputEl.value = "";
-  save();
-}
-
-function wireAutosave(el){
+function wireAutosave(el, fn){
   el.addEventListener("input", () => {
     window.clearTimeout(wireAutosave.t);
-    wireAutosave.t = window.setTimeout(save, 250);
+    wireAutosave.t = window.setTimeout(fn, 250);
   });
 }
 
-dateEl.addEventListener("change", () => load(dateEl.value));
-todayBtn.addEventListener("click", () => {
-  dateEl.value = todayISO();
-  load(dateEl.value);
-});
+// ---------- Month notes ----------
+function loadMonthNotes(activeMonthDate){
+  const k = KEY_MONTH_PREFIX + monthKey(activeMonthDate);
+  const raw = localStorage.getItem(k);
+  monthNotesEl.value = raw ?? "";
+}
 
-addTodoBtn.addEventListener("click", addTodo);
-todoInputEl.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") addTodo();
-});
+function saveMonthNotes(activeMonthDate){
+  const k = KEY_MONTH_PREFIX + monthKey(activeMonthDate);
+  localStorage.setItem(k, monthNotesEl.value);
+  saveStatus();
+}
 
-[mainWinEl, asapEl, buyNowEl, schoolEl, homeEl, notesEl].forEach(wireAutosave);
+// ---------- Day notes ----------
+function loadDayNote(iso){
+  const raw = localStorage.getItem(KEY_DAY_PREFIX + iso);
+  return raw ?? "";
+}
 
-// Init
-dateEl.value = todayISO();
-load(dateEl.value);
+function saveDayNote(iso, text){
+  localStorage.setItem(KEY_DAY_PREFIX + iso, text);
+  saveStatus();
+}
+
+// ---------- Calendar rendering ----------
+let activeMonth = new Date(); // today
+activeMonth.setHours(0,0,0,0);
+activeMonth = startOfMonth(activeMonth);
+
+function renderMonth(){
+  const label = activeMonth.toLocaleString(undefined, { month:"long", year:"numeric" });
+  monthTitleEl.textContent = label;
+
+  loadMonthNotes(activeMonth);
+
+  // Build a 6-week grid (42 cells) Monday-start
+  monthGridEl.innerHTML = "";
+
+  const first = startOfMonth(activeMonth);
+  const dim = daysInMonth(activeMonth);
+
+  const startOffset = mondayIndex(first.getDay()); // 0..6
+  // Grid starts at "first day of month minus offset"
+  const gridStart = new Date(first);
+  gridStart.setDate(first.getDate() - startOffset);
+
+  for(let i=0; i<42; i++){
+    const c

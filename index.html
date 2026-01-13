@@ -1,78 +1,92 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Planner</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+const $ = id => document.getElementById(id);
+const statusEl = $("status");
 
-<header class="top">
-  <div class="topRow">
-    <h1>Planner</h1>
+const monthTitle = $("monthTitle");
+const grid = $("monthGrid");
+const monthNotes = $("monthNotes");
 
-    <div class="monthControls">
-      <button id="prevMonth">◀</button>
-      <div id="monthTitle" class="monthTitle">Month YYYY</div>
-      <button id="nextMonth">▶</button>
-      <button id="todayBtn">Today</button>
-    </div>
-  </div>
+let activeCal = "personal";
+let activeMonth = new Date();
+activeMonth.setDate(1);
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="calendar">Calendar</button>
-    <button class="tab" data-tab="notes">Notes</button>
-    <button class="tab" data-tab="todo">To-Do</button>
-    <button class="tab" data-tab="buy">Buy</button>
-  </nav>
-</header>
+const KEYS = {
+  day: (cal, iso) => `planner:${cal}:day:${iso}`,
+  month: (cal, ym) => `planner:${cal}:month:${ym}`,
+  global: k => `planner:global:${k}`
+};
 
-<main class="wrap">
+function iso(d){
+  return d.toISOString().slice(0,10);
+}
 
-  <!-- CALENDAR -->
-  <section class="panel active" id="tab-calendar">
-    <div class="subtabs">
-      <button class="subtab active" data-cal="personal">Personal</button>
-      <button class="subtab" data-cal="work">Work</button>
-      <button class="subtab" data-cal="school">School</button>
-    </div>
+function ym(d){
+  return d.toISOString().slice(0,7);
+}
 
-    <div class="weekdays">
-      <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-    </div>
+function render(){
+  grid.innerHTML = "";
+  monthTitle.textContent = activeMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
+  monthNotes.value = localStorage.getItem(KEYS.month(activeCal, ym(activeMonth))) || "";
 
-    <div id="monthGrid" class="monthGrid"></div>
+  const days = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1,0).getDate();
+  const start = (new Date(activeMonth).getDay()+6)%7;
 
-    <section class="card">
-      <h2>Month Notes</h2>
-      <textarea id="monthNotes" class="area"
-        placeholder="Goals, reminders, focus for this month…"></textarea>
-    </section>
-  </section>
+  for(let i=0;i<start;i++) grid.appendChild(document.createElement("div"));
 
-  <!-- NOTES -->
-  <section class="panel" id="tab-notes">
-    <section class="card">
-      <h2>Personal Notes</h2>
-      <textarea id="notes-personal" class="area"></textarea>
-    </section>
-    <section class="card">
-      <h2>Work Notes</h2>
-      <textarea id="notes-work" class="area"></textarea>
-    </section>
-    <section class="card">
-      <h2>School Notes</h2>
-      <textarea id="notes-school" class="area"></textarea>
-    </section>
-  </section>
+  for(let d=1;d<=days;d++){
+    const cell = document.createElement("div");
+    cell.className="dayCell";
 
-  <!-- TODO -->
-  <section class="panel" id="tab-todo">
-    <section class="card">
-      <h2>Do ASAP</h2>
-      <textarea id="doAsap" class="area"></textarea>
-    </section>
-    <section class="card">
-      <h2>Do Eventually</h2>
-      <textarea id="doEventually"
+    const num = document.createElement("div");
+    num.className="dayNum";
+    num.textContent=d;
+
+    const ta = document.createElement("textarea");
+    ta.className="dayNotes";
+
+    const date = new Date(activeMonth);
+    date.setDate(d);
+    const key = KEYS.day(activeCal, iso(date));
+
+    ta.value = localStorage.getItem(key) || "";
+    ta.oninput = () => localStorage.setItem(key, ta.value);
+
+    cell.append(num, ta);
+    grid.appendChild(cell);
+  }
+}
+
+$("prevMonth").onclick = ()=>{ activeMonth.setMonth(activeMonth.getMonth()-1); render(); }
+$("nextMonth").onclick = ()=>{ activeMonth.setMonth(activeMonth.getMonth()+1); render(); }
+$("todayBtn").onclick = ()=>{ activeMonth = new Date(); activeMonth.setDate(1); render(); }
+
+monthNotes.oninput = ()=>{
+  localStorage.setItem(KEYS.month(activeCal, ym(activeMonth)), monthNotes.value);
+};
+
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    t.classList.add("active");
+    $(`tab-${t.dataset.tab}`).classList.add("active");
+  }
+});
+
+document.querySelectorAll(".subtab").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    activeCal=b.dataset.cal;
+    render();
+  }
+});
+
+["doAsap","doEventually","buyNow","buyEventually",
+ "notes-personal","notes-work","notes-school"].forEach(id=>{
+   const el=$(id);
+   el.value = localStorage.getItem(KEYS.global(id))||"";
+   el.oninput=()=>localStorage.setItem(KEYS.global(id), el.value);
+ });
+
+render();

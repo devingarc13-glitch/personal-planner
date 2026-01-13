@@ -136,9 +136,9 @@ button:hover{ border-color: var(--accent); }
   gap:12px;
   margin-top:10px;
 
-  /* KEY FIX: let rows grow when a day gets taller */
+  /* THIS IS WHAT MAKES ROWS EXPAND */
   grid-auto-rows: minmax(160px, auto);
-  align-items: start;
+  align-items:start;
 }
 
 .dayCell{
@@ -149,9 +149,8 @@ button:hover{ border-color: var(--accent); }
 
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:6px;
 
-  /* KEY FIX: allow it to grow */
   height:auto;
   min-height:160px;
   overflow:visible;
@@ -170,11 +169,7 @@ button:hover{ border-color: var(--accent); }
 
 /* IMPORTANT: remove the extra inner outline, give more space */
 .dayNotes{
-  display:block;
   width:100%;
-  flex:1;              /* fills the box */
-  min-height:110px;    /* important: gives a real clickable area even when empty */
-
   border:none;
   background:transparent;
   color:var(--text);
@@ -182,7 +177,11 @@ button:hover{ border-color: var(--accent); }
   resize:none;
   outline:none;
 
-  overflow:hidden;     /* no inner scroll */
+  /* KEY FIX */
+  height:auto;
+  min-height:24px;
+  overflow:hidden;
+
   line-height:1.35;
   cursor:text;
 }

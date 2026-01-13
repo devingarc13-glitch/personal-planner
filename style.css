@@ -7,79 +7,132 @@
   --accent:#5aa7ff;
 }
 
-*{box-sizing:border-box}
+*{ box-sizing:border-box; }
+
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font-family:system-ui;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* ===== Header like your older screenshot ===== */
 .top{
   padding:16px;
   border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  background: rgba(15,20,26,.92);
+  backdrop-filter: blur(8px);
+  z-index:10;
 }
 
+.top h1{
+  margin:0;
+  font-size:28px;
+  letter-spacing:.2px;
+}
+
+/* Make title left, controls right */
 .controls{
   display:flex;
   gap:8px;
   align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+#monthTitle{
+  display:inline-block;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:12px;
+  min-width:170px;
+  text-align:center;
+  color:var(--text);
+}
+
+/* Tabs row */
+.tabs{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
 button{
   background:var(--card);
   color:var(--text);
   border:1px solid var(--line);
-  border-radius:10px;
-  padding:6px 12px;
+  border-radius:12px;
+  padding:8px 14px;
   cursor:pointer;
 }
 
-.tabs{
-  margin-top:12px;
-  display:flex;
-  gap:8px;
+button:hover{ border-color: var(--accent); }
+
+.tab{
+  background: transparent;
+  color: var(--muted);
+  border-radius:999px;
+  padding:8px 14px;
 }
 
-.tab.active,
-.calType.active{
+.tab.active{
+  background:var(--card);
+  color:var(--text);
   border-color:var(--accent);
 }
 
-.panel{
-  display:none;
+/* ===== Panels ===== */
+main{
   padding:16px;
 }
 
-.panel.active{display:block}
+.panel{ display:none; }
+.panel.active{ display:block; }
 
+/* ===== Calendar subtabs ===== */
 .calendarType{
   display:flex;
-  gap:8px;
-  margin-bottom:12px;
+  gap:10px;
+  flex-wrap:wrap;
+  margin: 6px 0 12px;
 }
 
-.weekdays{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
+.subtab{
+  background:transparent;
   color:var(--muted);
-  font-size:12px;
-  margin-bottom:6px;
+  border-radius:999px;
+  padding:8px 14px;
 }
 
+.subtab.active{
+  background:var(--card);
+  color:var(--text);
+  border-color:var(--accent);
+}
+
+/* ===== Calendar grid ===== */
 #monthGrid{
   display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:10px;
+  grid-template-columns: repeat(7, 1fr);
+  gap:12px;
+  margin-top:10px;
 }
 
-.day{
+/* IMPORTANT: these match your JS (dayCell/dayNotes) */
+.dayCell{
   border:1px solid var(--line);
-  border-radius:12px;
-  padding:6px;
-  min-height:140px;
+  border-radius:14px;
+  padding:10px;
+  min-height:150px;
+  background:#0f141a;
   display:flex;
   flex-direction:column;
+  gap:8px;
 }
 
 .dayNum{
@@ -87,26 +140,49 @@ button{
   color:var(--muted);
 }
 
-.day textarea{
+.dayNotes{
   flex:1;
+  width:100%;
+  border:1px solid var(--line);
   background:transparent;
   color:var(--text);
-  border:none;
+  border-radius:12px;
+  padding:10px;
   resize:none;
   outline:none;
 }
 
+.dayNotes:focus{
+  border-color: var(--accent);
+}
+
+/* Month notes + other tab textareas */
 textarea{
   width:100%;
-  min-height:140px;
+  min-height:180px;
   background:var(--card);
   border:1px solid var(--line);
   color:var(--text);
-  border-radius:12px;
-  padding:10px;
+  border-radius:14px;
+  padding:12px;
+  outline:none;
 }
 
-footer{
-  padding:12px;
+textarea:focus{
+  border-color: var(--accent);
+}
+
+h3{
+  margin:18px 0 10px;
+  font-size:14px;
   color:var(--muted);
+  font-weight:600;
+}
+
+/* Mobile tweaks */
+@media (max-width: 900px){
+  .top h1{ font-size:22px; }
+  #monthTitle{ min-width:140px; }
+  #monthGrid{ gap:10px; }
+  .dayCell{ min-height:130px; }
 }

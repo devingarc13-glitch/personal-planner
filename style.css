@@ -240,28 +240,41 @@ h3{
   text-align: left;
   white-space: nowrap;
 }
+/* ===== MOBILE CALENDAR LAYOUT ONLY ===== */
+@media (max-width: 700px) {
 
-  /* make month grid readable on phone (2 columns) */
+  /* Switch month view to 2 large columns on phones */
   #monthGrid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    margin-top: 10px !important;
-    grid-auto-rows: minmax(160px, auto) !important;
-    align-items: start !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 
-  /* keep the day boxes looking like boxes (not lines) */
+  /* Hide weekday header row on mobile (it breaks alignment) */
+  .weekdays {
+    display: none;
+  }
+
+  /* Make each day tile taller and readable */
   .dayCell {
-    border: 1px solid var(--line) !important;
-    border-radius: 14px !important;
-    padding: 10px !important;
-    background: #0f141a !important;
-    min-height: 140px !important;
+    min-height: 220px;
   }
 
-  /* make the textarea fill the box and feel clickable */
-  .dayNotes {
-    width: 100% !important;
-    min-height: 110px !important;
+  /* Show weekday inside the day box instead */
+  .dayWk {
+    display: inline;
+    font-size: 12px;
+    color: var(--muted);
   }
+
+  /* Date on left, weekday on right */
+  .dayNum {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* Desktop default: hide weekday text inside tiles */
+.dayWk {
+  display: none;
+}

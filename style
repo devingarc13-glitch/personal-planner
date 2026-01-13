@@ -1,0 +1,121 @@
+:root{
+  --bg:#0f141a;
+  --card:#151c24;
+  --text:#e9eef5;
+  --muted:#9fb0c3;
+  --line:#223041;
+  --accent:#5aa7ff;
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.top{
+  padding:16px;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  background:rgba(15,20,26,.92);
+  backdrop-filter: blur(8px);
+}
+
+h1{ margin:0 0 10px 0; font-size:20px; }
+.dateRow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  color:var(--muted);
+}
+.dateRow input{
+  padding:8px 10px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:10px;
+}
+
+button{
+  padding:8px 12px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:10px;
+  cursor:pointer;
+}
+button:hover{ border-color:var(--accent); }
+
+.grid{
+  padding:16px;
+  display:grid;
+  gap:12px;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.card{
+  grid-column: span 12;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px;
+}
+.card h2{
+  margin:0 0 10px 0;
+  font-size:14px;
+  color:var(--muted);
+  font-weight:600;
+  letter-spacing:.3px;
+}
+
+.text, .area{
+  width:100%;
+  border:1px solid var(--line);
+  background:#0f141a;
+  color:var(--text);
+  border-radius:12px;
+  padding:10px 12px;
+  outline:none;
+}
+.area{ min-height:110px; resize:vertical; }
+
+.row{ display:flex; gap:10px; }
+.row .text{ flex:1; }
+
+.list{
+  list-style:none;
+  padding:0;
+  margin:10px 0 0 0;
+}
+.list li{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  background:#0f141a;
+  border-radius:12px;
+  margin-bottom:8px;
+}
+.list li.done{ opacity:.6; text-decoration: line-through; }
+.list li button{
+  margin-left:auto;
+  padding:6px 10px;
+}
+
+.wide{ grid-column: span 12; }
+
+.bottom{
+  padding:12px 16px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+}
+
+@media (min-width: 900px){
+  .card{ grid-column: span 6; }
+  .wide{ grid-column: span 12; }
+}

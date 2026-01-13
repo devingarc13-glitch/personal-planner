@@ -221,3 +221,40 @@ h3{
   border-radius:14px;
   padding:12px;
 }
+
+/* ===== Mobile-only fixes (does NOT change laptop/desktop) ===== */
+@media (max-width: 700px) {
+
+  /* show weekday labels again on phone */
+  .weekdays {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* match the 2-column mobile layout */
+    gap: 12px !important;
+    margin: 0 0 8px 0 !important;
+  }
+
+  /* make month grid readable on phone (2 columns) */
+  #monthGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    margin-top: 10px !important;
+    grid-auto-rows: minmax(160px, auto) !important;
+    align-items: start !important;
+  }
+
+  /* keep the day boxes looking like boxes (not lines) */
+  .dayCell {
+    border: 1px solid var(--line) !important;
+    border-radius: 14px !important;
+    padding: 10px !important;
+    background: #0f141a !important;
+    min-height: 140px !important;
+  }
+
+  /* make the textarea fill the box and feel clickable */
+  .dayNotes {
+    width: 100% !important;
+    min-height: 110px !important;
+  }
+}

@@ -254,3 +254,27 @@ h3{
 .calScroll #monthGrid{
   grid-template-columns: repeat(7, minmax(130px, 1fr));
 }
+/* ===== MOBILE FIX: make the calendar readable (1 day per row) ===== */
+@media (max-width: 700px){
+
+  /* hide weekday labels on phone (they take space) */
+  .weekdays{
+    display:none;
+  }
+
+  /* make month grid 1 column so day blocks aren't squished */
+  #monthGrid{
+    grid-template-columns: 1fr !important;
+    gap:14px;
+  }
+
+  /* make each day block taller by default */
+  .dayCell{
+    min-height: 240px;
+  }
+
+  /* make the typing area taller too */
+  .dayNotes{
+    min-height: 180px;
+  }
+}

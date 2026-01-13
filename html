@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personal Planner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="top">
+    <h1>Personal Planner</h1>
+    <div class="dateRow">
+      <label for="date">Date</label>
+      <input id="date" type="date" />
+      <button id="todayBtn" type="button">Today</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card">
+      <h2>Today’s Main Win</h2>
+      <input id="mainWin" class="text" placeholder="One thing that makes today a win…" />
+    </section>
+
+    <section class="card">
+      <h2>Daily To-Do</h2>
+      <div class="row">
+        <input id="todoInput" class="text" placeholder="Add a task…" />
+        <button id="addTodoBtn" type="button">Add</button>
+      </div>
+      <ul id="todoList" class="list"></ul>
+    </section>
+
+    <section class="card">
+      <h2>ASAP</h2>
+      <textarea id="asap" class="area" placeholder="Urgent / time-sensitive…"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>Buy Now</h2>
+      <textarea id="buyNow" class="area" placeholder="Stuff you need immediately…"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>School</h2>
+      <textarea id="school" class="area" placeholder="Assignments, emails, registration…"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>Home</h2>
+      <textarea id="home" class="area" placeholder="Chores, repairs, projects…"></textarea>
+    </section>
+
+    <section class="card wide">
+      <h2>Notes</h2>
+      <textarea id="notes" class="area" placeholder="Anything you want to remember…"></textarea>
+    </section>
+  </main>
+
+  <footer class="bottom">
+    <span id="status">Saved locally.</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

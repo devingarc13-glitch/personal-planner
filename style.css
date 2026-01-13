@@ -226,12 +226,20 @@ h3{
 @media (max-width: 700px) {
 
   /* show weekday labels again on phone */
-  .weekdays {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* match the 2-column mobile layout */
-    gap: 12px !important;
-    margin: 0 0 8px 0 !important;
-  }
+  .weekdays{
+  display:flex !important;
+  gap:14px !important;
+  overflow-x:auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 0 10px 0 !important;
+  padding-bottom: 4px !important;
+}
+
+.weekdays div{
+  min-width: 44px;   /* keeps them from wrapping */
+  text-align: left;
+  white-space: nowrap;
+}
 
   /* make month grid readable on phone (2 columns) */
   #monthGrid {

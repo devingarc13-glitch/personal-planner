@@ -160,18 +160,19 @@ button:hover{ border-color: var(--accent); }
 
 /* IMPORTANT: remove the extra inner outline, give more space */
 .dayNotes{
-  flex:1;
+  flex:0;                 /* lets it grow based on content */
   width:100%;
-  border:none;            /* <- removes inner outline */
+  border:none;
   background:transparent;
   color:var(--text);
-  border-radius:0;
-  padding:0;              /* <- more room */
+  padding:0;
   resize:none;
   outline:none;
-  overflow:hidden;        /* <- no inner scrolling; JS will auto-grow */
-  min-height:90px;
+  overflow:hidden;        /* no scrollbar */
+  min-height:24px;        /* starts small */
+  line-height:1.35;
 }
+
 
 .dayNotes::placeholder{ color:#6f8196; }
 

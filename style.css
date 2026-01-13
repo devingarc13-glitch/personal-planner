@@ -7,128 +7,77 @@
   --accent:#5aa7ff;
 }
 
-*{ box-sizing:border-box; }
-
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family: system-ui, sans-serif;
   background:var(--bg);
   color:var(--text);
+  font-family:system-ui;
 }
 
 .top{
   padding:16px;
   border-bottom:1px solid var(--line);
-  position:sticky;
-  top:0;
-  background:rgba(15,20,26,.95);
 }
 
-.topRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-h1{ margin:0; font-size:20px; }
-
-.monthControls{
+.controls{
   display:flex;
   gap:8px;
-}
-
-.monthTitle{
-  min-width:160px;
-  text-align:center;
-  padding:8px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:var(--card);
+  align-items:center;
 }
 
 button{
   background:var(--card);
-  border:1px solid var(--line);
   color:var(--text);
+  border:1px solid var(--line);
   border-radius:10px;
-  padding:8px 12px;
+  padding:6px 12px;
   cursor:pointer;
 }
 
-button:hover{ border-color:var(--accent); }
-
 .tabs{
+  margin-top:12px;
   display:flex;
   gap:8px;
-  margin-top:12px;
 }
 
-.tab{
-  border-radius:999px;
-  padding:8px 14px;
-  color:var(--muted);
-}
-
-.tab.active{
-  color:var(--text);
+.tab.active,
+.calType.active{
   border-color:var(--accent);
 }
 
-.wrap{
+.panel{
+  display:none;
   padding:16px;
+}
+
+.panel.active{display:block}
+
+.calendarType{
   display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-
-.panel{ display:none; }
-.panel.active{ display:block; }
-
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:12px;
-}
-
-.card h2{
-  margin:0 0 8px;
-  font-size:13px;
-  color:var(--muted);
-}
-
-.area{
-  width:100%;
-  min-height:140px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#0f141a;
-  color:var(--text);
-  padding:10px;
+  gap:8px;
+  margin-bottom:12px;
 }
 
 .weekdays{
   display:grid;
   grid-template-columns:repeat(7,1fr);
-  gap:8px;
   color:var(--muted);
   font-size:12px;
+  margin-bottom:6px;
 }
 
-.monthGrid{
+#monthGrid{
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:10px;
 }
 
-.dayCell{
-  background:#0f141a;
+.day{
   border:1px solid var(--line);
-  border-radius:14px;
-  padding:8px;
-  min-height:160px;
+  border-radius:12px;
+  padding:6px;
+  min-height:140px;
   display:flex;
   flex-direction:column;
 }
@@ -136,32 +85,28 @@ button:hover{ border-color:var(--accent); }
 .dayNum{
   font-size:12px;
   color:var(--muted);
-  margin-bottom:6px;
 }
 
-.dayNotes{
+.day textarea{
   flex:1;
-  border:1px solid var(--line);
   background:transparent;
   color:var(--text);
-  border-radius:10px;
-  padding:8px;
+  border:none;
   resize:none;
+  outline:none;
 }
 
-.subtabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:10px;
-}
-
-.subtab{
-  padding:6px 12px;
-  border-radius:999px;
+textarea{
+  width:100%;
+  min-height:140px;
+  background:var(--card);
   border:1px solid var(--line);
+  color:var(--text);
+  border-radius:12px;
+  padding:10px;
+}
+
+footer{
+  padding:12px;
   color:var(--muted);
 }
-
-.subtab.active{
-  border-color:var(--accent);
-  color:var(--

@@ -237,3 +237,10 @@ h3{
 @media (max-width: 420px){
   .monthGrid{ grid-template-columns: 1fr; } /* super small screens */
 }
+
+/* FORCE NOTES TO STACK VERTICALLY */
+#tab-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

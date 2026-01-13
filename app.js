@@ -104,13 +104,19 @@ function render(scrollToToday = false) {
     notes.className = "dayNotes";
     notes.value = localStorage.getItem(kDay(date)) || "";
 
-    // grow initially + on input
-    autoGrow(notes);
-    notes.addEventListener("input", () => {
-      localStorage.setItem(kDay(date), notes.value);
-      autoGrow(notes);
-      saveStatus();
-    });
+    // grow initially
+notes.style.height = "auto";
+autoGrow(notes);
+
+notes.addEventListener("input", () => {
+  localStorage.setItem(kDay(date), notes.value);
+
+  // reset height first, then grow
+  notes.style.height = "auto";
+  autoGrow(notes);
+
+  saveStatus();
+});
 
     cell.append(num, notes);
     grid.appendChild(cell);

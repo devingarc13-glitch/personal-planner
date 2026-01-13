@@ -1,106 +1,92 @@
 const $ = id => document.getElementById(id);
 const statusEl = $("status");
 
-let currentCalendar = "personal";
+const monthTitle = $("monthTitle");
+const grid = $("monthGrid");
+const monthNotes = $("monthNotes");
+
+let activeCal = "personal";
 let activeMonth = new Date();
 activeMonth.setDate(1);
 
-const monthTitleEl = $("monthTitle");
-const monthGridEl = $("monthGrid");
-const monthNotesEl = $("monthNotes");
-
-const notesPersonal = $("notesPersonal");
-const notesWork = $("notesWork");
-const notesSchool = $("notesSchool");
-
-const KEY = {
+const KEYS = {
   day: (cal, iso) => `planner:${cal}:day:${iso}`,
   month: (cal, ym) => `planner:${cal}:month:${ym}`,
-  notes: cal => `planner:notes:${cal}`
+  global: k => `planner:global:${k}`
 };
 
-function pad(n){ return String(n).padStart(2,"0"); }
-function iso(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function ym(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}`; }
-
-function saveStatus(){
-  statusEl.textContent = `Saved ${new Date().toLocaleTimeString()}`;
+function iso(d){
+  return d.toISOString().slice(0,10);
 }
 
-function autoGrow(el){
-  el.style.height = "auto";
-  el.style.height = el.scrollHeight + "px";
+function ym(d){
+  return d.toISOString().slice(0,7);
 }
 
-function renderMonth(){
-  monthTitleEl.textContent = activeMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
-  monthGridEl.innerHTML = "";
+function render(){
+  grid.innerHTML = "";
+  monthTitle.textContent = activeMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
+  monthNotes.value = localStorage.getItem(KEYS.month(activeCal, ym(activeMonth))) || "";
 
-  const days = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1, 0).getDate();
+  const days = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1,0).getDate();
+  const start = (new Date(activeMonth).getDay()+6)%7;
 
-  for(let d=1; d<=days; d++){
-    const date = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), d);
-    const dayISO = iso(date);
+  for(let i=0;i<start;i++) grid.appendChild(document.createElement("div"));
 
+  for(let d=1;d<=days;d++){
     const cell = document.createElement("div");
-    cell.className = "dayCell";
+    cell.className="dayCell";
 
     const num = document.createElement("div");
-    num.className = "dayNum";
-    num.textContent = d;
+    num.className="dayNum";
+    num.textContent=d;
 
     const ta = document.createElement("textarea");
-    ta.className = "dayNotes";
-    ta.value = localStorage.getItem(KEY.day(currentCalendar, dayISO)) || "";
-    autoGrow(ta);
+    ta.className="dayNotes";
 
-    ta.addEventListener("input", () => {
-      autoGrow(ta);
-      localStorage.setItem(KEY.day(currentCalendar, dayISO), ta.value);
-      saveStatus();
-    });
+    const date = new Date(activeMonth);
+    date.setDate(d);
+    const key = KEYS.day(activeCal, iso(date));
+
+    ta.value = localStorage.getItem(key) || "";
+    ta.oninput = () => localStorage.setItem(key, ta.value);
 
     cell.append(num, ta);
-    monthGridEl.appendChild(cell);
+    grid.appendChild(cell);
   }
-
-  monthNotesEl.value = localStorage.getItem(KEY.month(currentCalendar, ym(activeMonth))) || "";
 }
 
-monthNotesEl.addEventListener("input", () => {
-  localStorage.setItem(KEY.month(currentCalendar, ym(activeMonth)), monthNotesEl.value);
-  saveStatus();
-});
+$("prevMonth").onclick = ()=>{ activeMonth.setMonth(activeMonth.getMonth()-1); render(); }
+$("nextMonth").onclick = ()=>{ activeMonth.setMonth(activeMonth.getMonth()+1); render(); }
+$("todayBtn").onclick = ()=>{ activeMonth = new Date(); activeMonth.setDate(1); render(); }
 
-document.querySelectorAll(".calBtn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll(".calBtn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    currentCalendar = btn.dataset.cal;
-    renderMonth();
-  });
-});
+monthNotes.oninput = ()=>{
+  localStorage.setItem(KEYS.month(activeCal, ym(activeMonth)), monthNotes.value);
+};
 
-$("prevMonth").onclick = () => { activeMonth.setMonth(activeMonth.getMonth()-1); renderMonth(); };
-$("nextMonth").onclick = () => { activeMonth.setMonth(activeMonth.getMonth()+1); renderMonth(); };
-$("todayBtn").onclick = () => { activeMonth = new Date(); activeMonth.setDate(1); renderMonth(); };
-
-document.querySelectorAll(".tab").forEach(btn=>{
-  btn.onclick = () => {
-    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
     document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    btn.classList.add("active");
-    $(`tab-${btn.dataset.tab}`).classList.add("active");
-  };
+    t.classList.add("active");
+    $(`tab-${t.dataset.tab}`).classList.add("active");
+  }
 });
 
-[notesPersonal, notesWork, notesSchool].forEach((el, i)=>{
-  const key = ["personal","work","school"][i];
-  el.value = localStorage.getItem(KEY.notes(key)) || "";
-  el.addEventListener("input", ()=>{
-    localStorage.setItem(KEY.notes(key), el.value);
-    saveStatus();
-  });
+document.querySelectorAll(".subtab").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    activeCal=b.dataset.cal;
+    render();
+  }
 });
 
-renderMonth();
+["doAsap","doEventually","buyNow","buyEventually",
+ "notes-personal","notes-work","notes-school"].forEach(id=>{
+   const el=$(id);
+   el.value = localStorage.getItem(KEYS.global(id))||"";
+   el.oninput=()=>localStorage.setItem(KEYS.global(id), el.value);
+ });
+
+render();

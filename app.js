@@ -119,7 +119,11 @@ notes.addEventListener("input", () => {
 });
 
     cell.append(num, notes);
-    grid.appendChild(cell);
+    
+    // OPTIONAL: click anywhere in the box focuses the textarea
+cell.addEventListener("click", (e) => {
+  if (e.target !== notes) notes.focus();
+});    grid.appendChild(cell);
 
     if (thisISO === tISO) todayCell = cell;
   }

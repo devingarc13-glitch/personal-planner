@@ -1,92 +1,90 @@
 const $ = id => document.getElementById(id);
-const statusEl = $("status");
 
-const monthTitle = $("monthTitle");
-const grid = $("monthGrid");
-const monthNotes = $("monthNotes");
-
-let activeCal = "personal";
+// ---------- STATE ----------
 let activeMonth = new Date();
 activeMonth.setDate(1);
+let calendarType = "personal";
 
-const KEYS = {
-  day: (cal, iso) => `planner:${cal}:day:${iso}`,
-  month: (cal, ym) => `planner:${cal}:month:${ym}`,
-  global: k => `planner:global:${k}`
-};
+// ---------- HELPERS ----------
+const pad = n => String(n).padStart(2,"0");
+const monthKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 
-function iso(d){
-  return d.toISOString().slice(0,10);
-}
+// ---------- STORAGE ----------
+const kDay = d => `day:${calendarType}:${iso(d)}`;
+const kMonth = () => `month:${calendarType}:${monthKey(activeMonth)}`;
 
-function ym(d){
-  return d.toISOString().slice(0,7);
-}
-
-function render(){
-  grid.innerHTML = "";
-  monthTitle.textContent = activeMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
-  monthNotes.value = localStorage.getItem(KEYS.month(activeCal, ym(activeMonth))) || "";
-
-  const days = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1,0).getDate();
-  const start = (new Date(activeMonth).getDay()+6)%7;
-
-  for(let i=0;i<start;i++) grid.appendChild(document.createElement("div"));
-
-  for(let d=1;d<=days;d++){
-    const cell = document.createElement("div");
-    cell.className="dayCell";
-
-    const num = document.createElement("div");
-    num.className="dayNum";
-    num.textContent=d;
-
-    const ta = document.createElement("textarea");
-    ta.className="dayNotes";
-
-    const date = new Date(activeMonth);
-    date.setDate(d);
-    const key = KEYS.day(activeCal, iso(date));
-
-    ta.value = localStorage.getItem(key) || "";
-    ta.oninput = () => localStorage.setItem(key, ta.value);
-
-    cell.append(num, ta);
-    grid.appendChild(cell);
-  }
-}
-
-$("prevMonth").onclick = ()=>{ activeMonth.setMonth(activeMonth.getMonth()-1); render(); }
-$("nextMonth").onclick = ()=>{ activeMonth.setMonth(activeMonth.getMonth()+1); render(); }
-$("todayBtn").onclick = ()=>{ activeMonth = new Date(); activeMonth.setDate(1); render(); }
-
-monthNotes.oninput = ()=>{
-  localStorage.setItem(KEYS.month(activeCal, ym(activeMonth)), monthNotes.value);
-};
-
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+// ---------- TABS ----------
+document.querySelectorAll(".tab").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
     document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    t.classList.add("active");
-    $(`tab-${t.dataset.tab}`).classList.add("active");
-  }
+    btn.classList.add("active");
+    $(`tab-${btn.dataset.tab}`).classList.add("active");
+  };
 });
 
-document.querySelectorAll(".subtab").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll(".subtab").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    activeCal=b.dataset.cal;
+// ---------- CALENDAR TYPE ----------
+document.querySelectorAll(".calType").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".calType").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    calendarType = btn.dataset.type;
     render();
-  }
+  };
 });
 
-["doAsap","doEventually","buyNow","buyEventually",
- "notes-personal","notes-work","notes-school"].forEach(id=>{
-   const el=$(id);
-   el.value = localStorage.getItem(KEYS.global(id))||"";
-   el.oninput=()=>localStorage.setItem(KEYS.global(id), el.value);
- });
+// ---------- CALENDAR ----------
+function render(){
+  $("monthTitle").textContent =
+    activeMonth.toLocaleString(undefined,{month:"long",year:"numeric"});
 
+  $("monthGrid").innerHTML = "";
+  $("monthNotes").value = localStorage.getItem(kMonth()) || "";
+
+  const days = new Date(activeMonth.getFullYear(), activeMonth.getMonth()+1, 0).getDate();
+  const offset = (new Date(activeMonth.getFullYear(), activeMonth.getMonth(),1).getDay()+6)%7;
+
+  for(let i=0;i<offset;i++) $("monthGrid").appendChild(document.createElement("div"));
+
+  for(let d=1; d<=days; d++){
+    const date = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), d);
+    const box = document.createElement("div");
+    box.className="day";
+
+    const n = document.createElement("div");
+    n.className="dayNum";
+    n.textContent=d;
+
+    const t = document.createElement("textarea");
+    t.value = localStorage.getItem(kDay(date)) || "";
+    t.oninput=()=>localStorage.setItem(kDay(date),t.value);
+
+    box.append(n,t);
+    $("monthGrid").appendChild(box);
+  }
+}
+
+// ---------- NAV ----------
+$("prevMonth").onclick=()=>{
+  activeMonth.setMonth(activeMonth.getMonth()-1); render();
+};
+$("nextMonth").onclick=()=>{
+  activeMonth.setMonth(activeMonth.getMonth()+1); render();
+};
+$("todayBtn").onclick=()=>{
+  activeMonth=new Date(); activeMonth.setDate(1); render();
+};
+
+// ---------- GLOBAL NOTES ----------
+["notesGlobal","todoText","buyText"].forEach(id=>{
+  const el=$(id);
+  el.value=localStorage.getItem(id)||"";
+  el.oninput=()=>localStorage.setItem(id,el.value);
+});
+
+// ---------- MONTH NOTES ----------
+$("monthNotes").oninput=()=>localStorage.setItem(kMonth(),$("monthNotes").value);
+
+// ---------- INIT ----------
 render();

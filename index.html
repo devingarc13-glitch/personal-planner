@@ -49,9 +49,24 @@
 
   <!-- NOTES (shared / global, not tied to calendar) -->
   <section id="tab-notes" class="panel" role="tabpanel">
-    <h3>Notes</h3>
-    <textarea id="notesGlobal" placeholder="General notes (shared across all months)..."></textarea>
-  </section>
+  <div class="twoCol">
+    <section class="card">
+      <h3>Personal Notes</h3>
+      <textarea id="notesPersonal"></textarea>
+    </section>
+
+    <section class="card">
+      <h3>Work Notes</h3>
+      <textarea id="notesWork"></textarea>
+    </section>
+
+    <section class="card">
+      <h3>School Notes</h3>
+      <textarea id="notesSchool"></textarea>
+    </section>
+  </div>
+</section>
+
 
   <!-- TO-DO -->
   <section id="tab-todo" class="panel" role="tabpanel">

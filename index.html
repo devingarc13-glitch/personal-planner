@@ -9,81 +9,58 @@
 <body>
   <header class="top">
     <div class="topRow">
-      <h1>Personal Planner</h1>
+      <h1>Planner</h1>
 
       <div class="monthControls">
-        <button id="prevMonth" type="button" aria-label="Previous month">◀</button>
-        <div class="monthTitle" id="monthTitle">Month YYYY</div>
-        <button id="nextMonth" type="button" aria-label="Next month">▶</button>
-        <button id="todayBtn" type="button">Today</button>
+        <button id="prevMonth">◀</button>
+        <div id="monthTitle" class="monthTitle">Month YYYY</div>
+        <button id="nextMonth">▶</button>
+        <button id="todayBtn">Today</button>
       </div>
     </div>
 
-    <nav class="tabs" role="tablist" aria-label="Planner tabs">
-      <button class="tab active" data-tab="calendar" role="tab" aria-selected="true">Calendar</button>
-      <button class="tab" data-tab="todo" role="tab" aria-selected="false">To-Do</button>
-      <button class="tab" data-tab="buy" role="tab" aria-selected="false">Buy</button>
-      <button class="tab" data-tab="school" role="tab" aria-selected="false">School</button>
-      <button class="tab" data-tab="work" role="tab" aria-selected="false">Work</button>
+    <nav class="tabs">
+      <button class="tab active" data-tab="calendar">Calendar</button>
+      <button class="tab" data-tab="notes">Notes</button>
     </nav>
   </header>
 
   <main class="wrap">
-    <!-- CALENDAR TAB -->
-    <section class="panel active" id="tab-calendar" role="tabpanel">
-      <section class="card">
-        <div class="calendarHeader">
-          <div class="weekdays">
-            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-          </div>
-        </div>
 
-        <div class="monthGrid" id="monthGrid" aria-label="Month calendar grid"></div>
+    <!-- CALENDAR TAB -->
+    <section class="panel active" id="tab-calendar">
+      <div class="calendarSwitch">
+        <button class="calBtn active" data-cal="personal">Personal</button>
+        <button class="calBtn" data-cal="work">Work</button>
+        <button class="calBtn" data-cal="school">School</button>
+      </div>
+
+      <section class="card">
+        <div class="weekdays">
+          <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+        <div id="monthGrid" class="monthGrid"></div>
       </section>
 
       <section class="card">
         <h2>Month Notes</h2>
-        <textarea id="monthNotes" class="area" placeholder="Notes for this month (goals, reminders, appointments, focus)…"></textarea>
+        <textarea id="monthNotes" class="area"></textarea>
       </section>
     </section>
 
-    <!-- TO-DO TAB -->
-    <section class="panel" id="tab-todo" role="tabpanel">
+    <!-- NOTES TAB -->
+    <section class="panel" id="tab-notes">
       <section class="card">
-        <h2>Do ASAP</h2>
-        <textarea id="doAsap" class="area" placeholder="Urgent / time-sensitive…"></textarea>
+        <h2>Personal Notes</h2>
+        <textarea id="notesPersonal" class="area"></textarea>
       </section>
       <section class="card">
-        <h2>Do Eventually</h2>
-        <textarea id="doEventually" class="area" placeholder="Not urgent — keep it here so it doesn’t disappear…"></textarea>
-      </section>
-    </section>
-
-    <!-- BUY TAB -->
-    <section class="panel" id="tab-buy" role="tabpanel">
-      <section class="card">
-        <h2>Buy Now</h2>
-        <textarea id="buyNow" class="area" placeholder="Stuff you need immediately…"></textarea>
+        <h2>Work Notes</h2>
+        <textarea id="notesWork" class="area"></textarea>
       </section>
       <section class="card">
-        <h2>Buy Eventually</h2>
-        <textarea id="buyEventually" class="area" placeholder="Stuff you want later / ideas…"></textarea>
-      </section>
-    </section>
-
-    <!-- SCHOOL TAB -->
-    <section class="panel" id="tab-school" role="tabpanel">
-      <section class="card">
-        <h2>School</h2>
-        <textarea id="school" class="area" placeholder="Assignments, emails, registration, deadlines, study plan…"></textarea>
-      </section>
-    </section>
-
-    <!-- WORK TAB -->
-    <section class="panel" id="tab-work" role="tabpanel">
-      <section class="card">
-        <h2>Work</h2>
-        <textarea id="work" class="area" placeholder="Work tasks, follow-ups, reminders, notes…"></textarea>
+        <h2>School Notes</h2>
+        <textarea id="notesSchool" class="area"></textarea>
       </section>
     </section>
 

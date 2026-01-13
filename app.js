@@ -25,10 +25,10 @@ function saveStatus(){
   statusEl.textContent = `Saved: ${new Date().toLocaleTimeString()}`;
 }
 
-// Auto-grow textarea (no inner scroll)
 function autoGrow(ta){
-  ta.style.height = "auto";
-  ta.style.height = (ta.scrollHeight) + "px";
+  const MIN = 110; // match CSS min-height
+  ta.style.height = "0px";
+  ta.style.height = Math.max(ta.scrollHeight, MIN) + "px";
 }
 
 // ---------- TOP TABS ----------

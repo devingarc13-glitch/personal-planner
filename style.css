@@ -222,59 +222,32 @@ h3{
   padding:12px;
 }
 
-/* ===== Mobile-only fixes (does NOT change laptop/desktop) ===== */
-@media (max-width: 700px) {
-
-  /* show weekday labels again on phone */
+/* ===== Mobile (phone) ===== */
+@media (max-width: 700px){
+  /* Make weekdays a single horizontal row you can swipe */
   .weekdays{
-  display:flex !important;
-  gap:14px !important;
-  overflow-x:auto !important;
-  -webkit-overflow-scrolling: touch;
-  margin: 0 0 10px 0 !important;
-  padding-bottom: 4px !important;
-}
-
-.weekdays div{
-  min-width: 44px;   /* keeps them from wrapping */
-  text-align: left;
-  white-space: nowrap;
-}
-/* ===== MOBILE CALENDAR LAYOUT ONLY ===== */
-@media (max-width: 700px) {
-
-  /* Switch month view to 2 large columns on phones */
-  #monthGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    display:flex;
+    gap:14px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    padding:0 0 6px;
+    margin:0 0 10px;
+  }
+  .weekdays div{
+    min-width:44px;
+    white-space:nowrap;
+    padding-left:0;
   }
 
-  /* Hide weekday header row on mobile (it breaks alignment) */
-  .weekdays {
-    display: none;
+  /* Keep 7-day layout but allow sideways scrolling instead of squishing */
+  #monthGrid{
+    grid-template-columns: repeat(7, minmax(150px, 1fr));
+    width:max-content;              /* makes grid wider than screen */
+    overflow-x:auto;                /* allows sideways swipe */
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:10px;
   }
 
-  /* Make each day tile taller and readable */
-  .dayCell {
-    min-height: 220px;
-  }
-
-  /* Show weekday inside the day box instead */
-  .dayWk {
-    display: inline;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  /* Date on left, weekday on right */
-  .dayNum {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
-/* Desktop default: hide weekday text inside tiles */
-.dayWk {
-  display: none;
+  /* Make each day box readable on mobile */
+  .dayCell{ min-height:220px; }
 }

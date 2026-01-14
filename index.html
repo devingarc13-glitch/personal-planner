@@ -37,22 +37,14 @@
       <button class="subtab" data-cal="school" type="button">School</button>
     </div>
 
-    <!-- Calendar zoom controls (NEW) -->
-    <div class="calZoomBar">
-      <button id="calFit" type="button" aria-label="Fit calendar to screen">Fit</button>
-      <button id="calReset" type="button" aria-label="Reset calendar zoom to 100%">100%</button>
-    </div>
-
-    <!-- Zoomable calendar viewport (NEW) -->
-    <div class="calZoomWrap">
-      <div class="calScroll" id="calScroll">
-        <div class="weekdays" aria-hidden="true">
-          <div>Mon</div><div>Tue</div><div>Wed</div>
-          <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-        </div>
-
-        <div id="monthGrid" class="monthGrid" aria-label="Month calendar grid"></div>
+    <!-- One shared scroller: weekdays + grid move together -->
+    <div class="calScroll">
+      <div class="weekdays" aria-hidden="true">
+        <div>Mon</div><div>Tue</div><div>Wed</div>
+        <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
       </div>
+
+      <div id="monthGrid" class="monthGrid" aria-label="Month calendar grid"></div>
     </div>
 
     <h3>Month Notes</h3>

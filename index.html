@@ -37,14 +37,23 @@
       <button class="subtab" data-cal="school" type="button">School</button>
     </div>
 
-    <div class="calScroll">
-  <div class="weekdays" aria-hidden="true">
-    <div>Mon</div><div>Tue</div><div>Wed</div>
-    <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-  </div>
+    <!-- Calendar zoom controls (NEW) -->
+    <div class="calZoomBar">
+      <button id="calFit" type="button" aria-label="Fit calendar to screen">Fit</button>
+      <button id="calReset" type="button" aria-label="Reset calendar zoom to 100%">100%</button>
+    </div>
 
-  <div id="monthGrid" class="monthGrid" aria-label="Month calendar grid"></div>
-</div>
+    <!-- Zoomable calendar viewport (NEW) -->
+    <div class="calZoomWrap">
+      <div class="calScroll" id="calScroll">
+        <div class="weekdays" aria-hidden="true">
+          <div>Mon</div><div>Tue</div><div>Wed</div>
+          <div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+        </div>
+
+        <div id="monthGrid" class="monthGrid" aria-label="Month calendar grid"></div>
+      </div>
+    </div>
 
     <h3>Month Notes</h3>
     <textarea id="monthNotes" placeholder="Month notes..."></textarea>
@@ -52,24 +61,23 @@
 
   <!-- NOTES (shared / global, not tied to calendar) -->
   <section id="tab-notes" class="panel" role="tabpanel">
-  <div class="twoCol">
-    <section class="card">
-      <h3>Personal Notes</h3>
-      <textarea id="notesPersonal"></textarea>
-    </section>
+    <div class="twoCol">
+      <section class="card">
+        <h3>Personal Notes</h3>
+        <textarea id="notesPersonal"></textarea>
+      </section>
 
-    <section class="card">
-      <h3>Work Notes</h3>
-      <textarea id="notesWork"></textarea>
-    </section>
+      <section class="card">
+        <h3>Work Notes</h3>
+        <textarea id="notesWork"></textarea>
+      </section>
 
-    <section class="card">
-      <h3>School Notes</h3>
-      <textarea id="notesSchool"></textarea>
-    </section>
-  </div>
-</section>
-
+      <section class="card">
+        <h3>School Notes</h3>
+        <textarea id="notesSchool"></textarea>
+      </section>
+    </div>
+  </section>
 
   <!-- TO-DO -->
   <section id="tab-todo" class="panel" role="tabpanel">

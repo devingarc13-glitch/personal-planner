@@ -105,25 +105,27 @@ function render(scrollToToday = false) {
     notes.value = localStorage.getItem(kDay(date)) || "";
 
     // grow initially
-notes.style.height = "auto";
-autoGrow(notes);
+    notes.style.height = "auto";
+    autoGrow(notes);
 
-notes.addEventListener("input", () => {
-  localStorage.setItem(kDay(date), notes.value);
+    notes.addEventListener("input", () => {
+      localStorage.setItem(kDay(date), notes.value);
 
-  // reset height first, then grow
-  notes.style.height = "auto";
-  autoGrow(notes);
+      // reset height first, then grow
+      notes.style.height = "auto";
+      autoGrow(notes);
 
-  saveStatus();
-});
+      saveStatus();
+    });
 
     cell.append(num, notes);
-    
-    // OPTIONAL: click anywhere in the box focuses the textarea
-cell.addEventListener("click", (e) => {
-  if (e.target !== notes) notes.focus();
-});    grid.appendChild(cell);
+
+    // click anywhere in the box focuses the textarea
+    cell.addEventListener("click", (e) => {
+      if (e.target !== notes) notes.focus();
+    });
+
+    grid.appendChild(cell);
 
     if (thisISO === tISO) todayCell = cell;
   }
@@ -182,3 +184,46 @@ wireGlobal("buyEventually");
 
 // ---------- INIT ----------
 render();
+
+
+// ===== Calendar Zoom (NEW) =====
+let calScale = 1;
+
+function applyCalScale(){
+  const cal = document.getElementById("calScroll");
+  if (!cal) return;
+  cal.style.transform = `scale(${calScale})`;
+}
+
+function fitCalendarToScreen(){
+  const wrap = document.querySelector(".calZoomWrap");
+  const cal = document.getElementById("calScroll");
+  if (!wrap || !cal) return;
+
+  // reset scale so measurements are correct
+  cal.style.transform = "scale(1)";
+
+  const wrapW = wrap.clientWidth;
+  const calW = cal.scrollWidth;
+
+  // fit-to-width, never upscale past 100%
+  calScale = Math.min(1, wrapW / calW);
+
+  applyCalScale();
+
+  // reset pan position
+  wrap.scrollLeft = 0;
+  wrap.scrollTop = 0;
+}
+
+document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "calFit") fitCalendarToScreen();
+  if (e.target && e.target.id === "calReset") {
+    calScale = 1;
+    applyCalScale();
+  }
+});
+
+// auto-fit on load & rotation
+window.addEventListener("load", fitCalendarToScreen);
+window.addEventListener("resize", fitCalendarToScreen);

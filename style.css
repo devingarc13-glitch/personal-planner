@@ -116,6 +116,13 @@ button:hover{ border-color: var(--accent); }
   border-color:var(--accent);
 }
 
+/* ===== ADDED: One shared scroller for weekdays + grid ===== */
+.calScroll{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:10px;
+}
+
 /* ===== Weekdays row (aligned with grid columns) ===== */
 .weekdays{
   display:grid;
@@ -224,29 +231,28 @@ h3{
 
 /* ===== Mobile (phone) ===== */
 @media (max-width: 700px){
-  /* Make weekdays a single horizontal row you can swipe */
+
+  /* CHANGED: keep weekdays as 7 columns so it stays in one row */
   .weekdays{
-    display:flex;
-    gap:14px;
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    padding:0 0 6px;
-    margin:0 0 10px;
+    grid-template-columns: repeat(7, minmax(150px, 1fr));
+    width:max-content;
+    gap:12px;
+    margin: 0 0 8px 0;
   }
   .weekdays div{
-    min-width:44px;
+    min-width:150px;     /* keeps label aligned with day width */
     white-space:nowrap;
-    padding-left:0;
+    padding-left:8px;
   }
 
-  /* Keep 7-day layout but allow sideways scrolling instead of squishing */
+  /* CHANGED: make grid match the same column sizing and width */
   #monthGrid{
     grid-template-columns: repeat(7, minmax(150px, 1fr));
-    width:max-content;              /* makes grid wider than screen */
-    overflow-x:auto;                /* allows sideways swipe */
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:10px;
+    width:max-content;
   }
+
+  /* IMPORTANT: REMOVE scrolling from monthGrid (scroll happens on .calScroll) */
+  /* (no overflow-x on #monthGrid) */
 
   /* Make each day box readable on mobile */
   .dayCell{ min-height:220px; }

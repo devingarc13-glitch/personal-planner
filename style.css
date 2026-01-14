@@ -229,22 +229,45 @@ h3{
 /* ===== Mobile (phone) ===== */
 @media (max-width: 700px){
 
-  /* Keep weekdays aligned to the same column sizing as the calendar */
+  /* IMPORTANT: stop forcing sideways scrolling by default */
+  .calScroll{
+    overflow-x:hidden;
+  }
+
+  /* Fit the entire 7-day week on screen by default */
   .weekdays{
-    grid-template-columns: repeat(7, minmax(150px, 1fr));
-    width:max-content;
-    gap:12px;
+    grid-template-columns: repeat(7, 1fr);
+    width:100%;
+    gap:8px;
+    font-size:11px;
   }
   .weekdays div{
-    min-width:150px;
+    min-width:0;
     white-space:nowrap;
     text-align:center;
   }
 
+  /* Make the calendar actually fit the phone width */
   #monthGrid{
-    grid-template-columns: repeat(7, minmax(150px, 1fr));
-    width:max-content;
+    grid-template-columns: repeat(7, 1fr);
+    width:100%;
+    gap:8px;
+    grid-auto-rows: minmax(120px, auto);
   }
 
-  .dayCell{ min-height:220px; }
+  /* Slightly smaller day boxes so the whole month feels “overview-first” */
+  .dayCell{
+    min-height:120px;
+    padding:8px;
+    border-radius:12px;
+  }
+
+  .dayNum{
+    font-size:11px;
+  }
+
+  .dayNotes{
+    font-size:12px;
+    line-height:1.3;
+  }
 }

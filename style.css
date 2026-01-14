@@ -16,7 +16,7 @@ body{
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ===== Header (like your older screenshot) ===== */
+/* ===== Header ===== */
 .top{
   padding:16px;
   border-bottom:1px solid var(--line);
@@ -97,7 +97,7 @@ button:hover{ border-color: var(--accent); }
   color:var(--muted);
 }
 
-/* ===== Calendar type (Personal/Work/School) ===== */
+/* ===== Calendar type ===== */
 .calendarType{
   display:flex;
   gap:10px;
@@ -116,14 +116,14 @@ button:hover{ border-color: var(--accent); }
   border-color:var(--accent);
 }
 
-/* ===== Shared scroller for weekdays + grid ===== */
+/* ===== Calendar scroll container ===== */
 .calScroll{
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
   padding-bottom:10px;
 }
 
-/* ===== Weekdays row ===== */
+/* ===== Weekdays ===== */
 .weekdays{
   display:grid;
   grid-template-columns: repeat(7, 1fr);
@@ -159,10 +159,9 @@ button:hover{ border-color: var(--accent); }
 
   height:auto;
   min-height:160px;
-  overflow:visible;
 }
 
-/* highlight today */
+/* Today highlight */
 .dayCell.today{
   border-color: var(--accent);
   box-shadow: 0 0 0 1px rgba(90,167,255,.25) inset;
@@ -192,7 +191,7 @@ button:hover{ border-color: var(--accent); }
 }
 .dayNotes::placeholder{ color:#6f8196; }
 
-/* Month notes + other tab textareas */
+/* Month notes + other textareas */
 textarea{
   width:100%;
   min-height:180px;
@@ -212,7 +211,7 @@ h3{
   font-weight:600;
 }
 
-/* Cards for To-Do / Buy split */
+/* Cards */
 .twoCol{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -226,15 +225,15 @@ h3{
   padding:12px;
 }
 
-/* ===== Mobile (phone) ===== */
+/* ===== MOBILE FIXES ===== */
 @media (max-width: 700px){
 
-  /* Allow slight horizontal scroll if needed */
+  /* allow light horizontal pan if needed */
   .calScroll{
     overflow-x:auto;
   }
 
-  /* Give each day a real, usable width */
+  /* usable day width (THIS fixes the 1-word problem) */
   .weekdays{
     grid-template-columns: repeat(7, minmax(120px, 1fr));
     width:max-content;
@@ -254,7 +253,6 @@ h3{
     grid-auto-rows: minmax(160px, auto);
   }
 
-  /* More writing space */
   .dayCell{
     min-height:160px;
     padding:10px;
@@ -268,47 +266,5 @@ h3{
   .dayNotes{
     font-size:13px;
     line-height:1.4;
-  }
-}
-
-  /* Allow slight horizontal scroll only if needed */
-  .calScroll{
-    overflow-x:auto;
-  }
-
-  /* Give each day a real minimum width so notes are usable */
-  .weekdays{
-    grid-template-columns: repeat(7, minmax(100px, 1fr));
-    width:max-content;
-    gap:10px;
-    font-size:11px;
-  }
-  .weekdays div{
-    min-width:100px;
-    white-space:nowrap;
-    text-align:center;
-  }
-
-  #monthGrid{
-    grid-template-columns: repeat(7, minmax(100px, 1fr));
-    width:max-content;
-    gap:10px;
-    grid-auto-rows: minmax(140px, auto);
-  }
-
-  /* Bigger writing area without making it huge */
-  .dayCell{
-    min-height:140px;
-    padding:8px;
-    border-radius:12px;
-  }
-
-  .dayNum{
-    font-size:11px;
-  }
-
-  .dayNotes{
-    font-size:13px;
-    line-height:1.35;
   }
 }

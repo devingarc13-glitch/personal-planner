@@ -104,23 +104,18 @@ function render(scrollToToday = false) {
     notes.className = "dayNotes";
     notes.value = localStorage.getItem(kDay(date)) || "";
 
-    // grow initially
     notes.style.height = "auto";
     autoGrow(notes);
 
     notes.addEventListener("input", () => {
       localStorage.setItem(kDay(date), notes.value);
-
-      // reset height first, then grow
       notes.style.height = "auto";
       autoGrow(notes);
-
       saveStatus();
     });
 
     cell.append(num, notes);
 
-    // click anywhere in the box focuses the textarea
     cell.addEventListener("click", (e) => {
       if (e.target !== notes) notes.focus();
     });
@@ -130,7 +125,6 @@ function render(scrollToToday = false) {
     if (thisISO === tISO) todayCell = cell;
   }
 
-  // after render, scroll to today's cell if requested
   if (scrollToToday && todayCell) {
     todayCell.scrollIntoView({ behavior: "smooth", block: "center" });
   }
@@ -153,7 +147,7 @@ $("todayBtn").onclick = () => {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   activeMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  render(true); // highlight + scroll to today
+  render(true);
 };
 
 // ---------- MONTH NOTES ----------
@@ -162,7 +156,7 @@ $("monthNotes").addEventListener("input", () => {
   saveStatus();
 });
 
-// ---------- GLOBAL TEXTAREAS (Notes / To-Do / Buy) ----------
+// ---------- GLOBAL TEXTAREAS ----------
 function wireGlobal(id) {
   const el = $(id);
   if (!el) return;
@@ -184,46 +178,3 @@ wireGlobal("buyEventually");
 
 // ---------- INIT ----------
 render();
-
-
-// ===== Calendar Zoom (NEW) =====
-let calScale = 1;
-
-function applyCalScale(){
-  const cal = document.getElementById("calScroll");
-  if (!cal) return;
-  cal.style.transform = `scale(${calScale})`;
-}
-
-function fitCalendarToScreen(){
-  const wrap = document.querySelector(".calZoomWrap");
-  const cal = document.getElementById("calScroll");
-  if (!wrap || !cal) return;
-
-  // reset scale so measurements are correct
-  cal.style.transform = "scale(1)";
-
-  const wrapW = wrap.clientWidth;
-  const calW = cal.scrollWidth;
-
-  // fit-to-width, never upscale past 100%
-  calScale = Math.min(1, wrapW / calW);
-
-  applyCalScale();
-
-  // reset pan position
-  wrap.scrollLeft = 0;
-  wrap.scrollTop = 0;
-}
-
-document.addEventListener("click", (e) => {
-  if (e.target && e.target.id === "calFit") fitCalendarToScreen();
-  if (e.target && e.target.id === "calReset") {
-    calScale = 1;
-    applyCalScale();
-  }
-});
-
-// auto-fit on load & rotation
-window.addEventListener("load", fitCalendarToScreen);
-window.addEventListener("resize", fitCalendarToScreen);

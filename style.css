@@ -116,31 +116,14 @@ button:hover{ border-color: var(--accent); }
   border-color:var(--accent);
 }
 
-/* ===== Calendar Zoom (NEW) ===== */
-.calZoomBar{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  margin: 0 0 10px;
-}
-
-.calZoomWrap{
-  border-radius:14px;
-  overflow:auto;                   /* pan inside after zoom */
-  -webkit-overflow-scrolling:touch;
-}
-
-/* ===== Shared scroller content (weekdays + grid) ===== */
+/* ===== Shared scroller for weekdays + grid ===== */
 .calScroll{
-  overflow-x:visible;              /* scroll is handled by calZoomWrap now */
+  overflow-x:auto;
   -webkit-overflow-scrolling:touch;
   padding-bottom:10px;
-
-  transform-origin: top left;      /* for scaling */
-  will-change: transform;
 }
 
-/* ===== Weekdays row (aligned with grid columns) ===== */
+/* ===== Weekdays row ===== */
 .weekdays{
   display:grid;
   grid-template-columns: repeat(7, 1fr);
@@ -150,7 +133,8 @@ button:hover{ border-color: var(--accent); }
   margin: 0 0 8px 0;
 }
 .weekdays div{
-  padding-left:8px;
+  text-align:center;          /* helps “line up” visually with boxes */
+  padding:0;                  /* remove left offset */
 }
 
 /* ===== Calendar grid ===== */
@@ -159,8 +143,6 @@ button:hover{ border-color: var(--accent); }
   grid-template-columns: repeat(7, 1fr);
   gap:12px;
   margin-top:10px;
-
-  /* THIS IS WHAT MAKES ROWS EXPAND */
   grid-auto-rows: minmax(160px, auto);
   align-items:start;
 }
@@ -191,7 +173,7 @@ button:hover{ border-color: var(--accent); }
   color:var(--muted);
 }
 
-/* IMPORTANT: remove the extra inner outline, give more space */
+/* Notes inside each day */
 .dayNotes{
   width:100%;
   border:none;
@@ -201,7 +183,6 @@ button:hover{ border-color: var(--accent); }
   resize:none;
   outline:none;
 
-  /* KEY FIX */
   height:auto;
   min-height:24px;
   overflow:hidden;
@@ -209,7 +190,6 @@ button:hover{ border-color: var(--accent); }
   line-height:1.35;
   cursor:text;
 }
-
 .dayNotes::placeholder{ color:#6f8196; }
 
 /* Month notes + other tab textareas */
@@ -249,25 +229,22 @@ h3{
 /* ===== Mobile (phone) ===== */
 @media (max-width: 700px){
 
-  /* keep weekdays as 7 columns so it stays in one row */
+  /* Keep weekdays aligned to the same column sizing as the calendar */
   .weekdays{
     grid-template-columns: repeat(7, minmax(150px, 1fr));
     width:max-content;
     gap:12px;
-    margin: 0 0 8px 0;
   }
   .weekdays div{
     min-width:150px;
     white-space:nowrap;
-    padding-left:8px;
+    text-align:center;
   }
 
-  /* make grid match the same column sizing and width */
   #monthGrid{
     grid-template-columns: repeat(7, minmax(150px, 1fr));
     width:max-content;
   }
 
-  /* Make each day box readable on mobile */
   .dayCell{ min-height:220px; }
 }

@@ -26,9 +26,9 @@ function saveStatus(){
 }
 
 function autoGrow(ta){
-  // Desktop can be taller; iPhone needs smaller so boxes aren't skyscrapers
+  // iPhone: allow true squares by not forcing a minimum textarea height
   const isMobile = window.matchMedia("(max-width: 700px)").matches;
-  const MIN = isMobile ? 40 : 110;
+  const MIN = isMobile ? 0 : 110;
 
   ta.style.height = "0px";
   ta.style.height = Math.max(ta.scrollHeight, MIN) + "px";

@@ -225,36 +225,38 @@ h3{
   padding:12px;
 }
 
-/* ===== MOBILE FIXES ===== */
+/* ===== iPHONE / MOBILE FIXES (FULL CALENDAR + ALIGNED WEEKDAYS) ===== */
 @media (max-width: 700px){
 
-  /* allow light horizontal pan if needed */
+  /* iPhone: show full calendar width by default (no sideways swipe needed) */
   .calScroll{
-    overflow-x:auto;
+    overflow-x:hidden;
   }
 
-  /* usable day width (THIS fixes the 1-word problem) */
   .weekdays{
-    grid-template-columns: repeat(7, minmax(120px, 1fr));
-    width:max-content;
-    gap:10px;
+    grid-template-columns: repeat(7, 1fr);
+    width:100%;
+    gap:8px;
     font-size:11px;
+    margin: 0 0 8px 0;
   }
   .weekdays div{
-    min-width:120px;
+    min-width:0;
     white-space:nowrap;
     text-align:center;
   }
 
   #monthGrid{
-    grid-template-columns: repeat(7, minmax(120px, 1fr));
-    width:max-content;
-    gap:10px;
-    grid-auto-rows: minmax(160px, auto);
+    grid-template-columns: repeat(7, 1fr);
+    width:100%;
+    gap:8px;
+
+    margin-top:0; /* IMPORTANT: fixes weekday row alignment on iPhone */
+    grid-auto-rows: minmax(140px, auto);
   }
 
   .dayCell{
-    min-height:160px;
+    min-height:140px;
     padding:10px;
     border-radius:12px;
   }

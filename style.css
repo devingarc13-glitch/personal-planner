@@ -5,6 +5,10 @@
   --muted:#9fb0c3;
   --line:#223041;
   --accent:#5aa7ff;
+
+  /* 🔒 keep weekdays + grid perfectly aligned */
+  --dayW: 1fr;
+  --gap: 12px;
 }
 
 *{ box-sizing:border-box; }
@@ -126,8 +130,8 @@ button:hover{ border-color: var(--accent); }
 /* ===== Weekdays ===== */
 .weekdays{
   display:grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap:12px;
+  grid-template-columns: repeat(7, var(--dayW));
+  gap: var(--gap);
   color:var(--muted);
   font-size:12px;
   margin: 0 0 8px 0;
@@ -140,9 +144,9 @@ button:hover{ border-color: var(--accent); }
 /* ===== Calendar grid ===== */
 #monthGrid{
   display:grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap:12px;
-  margin-top:10px;
+  grid-template-columns: repeat(7, var(--dayW));
+  gap: var(--gap);
+  margin-top:0; /* keep alignment with weekdays */
   grid-auto-rows: minmax(160px, auto);
   align-items:start;
 }
@@ -228,17 +232,19 @@ h3{
 /* ===== iPHONE / MOBILE FIXES (NO TRANSFORM — KEEP PAN + ZOOM) ===== */
 @media (max-width: 700px){
 
-  /* allow pan if needed */
+  /* mobile uses the big "old view" sizing — variables lock weekdays + grid together */
+  :root{
+    --dayW: minmax(120px, 1fr);
+    --gap: 10px;
+  }
+
   .calScroll{
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
   }
 
-  /* use the "big box" grid like your old view */
   .weekdays{
-    grid-template-columns: repeat(7, minmax(120px, 1fr));
     width:max-content;
-    gap:10px;
     font-size:11px;
     margin: 0 0 8px 0;
   }
@@ -249,10 +255,7 @@ h3{
   }
 
   #monthGrid{
-    grid-template-columns: repeat(7, minmax(120px, 1fr));
     width:max-content;
-    gap:10px;
-    margin-top:0;
     grid-auto-rows: minmax(160px, auto);
     align-items:start;
   }

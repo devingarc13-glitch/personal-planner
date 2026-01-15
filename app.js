@@ -80,9 +80,11 @@ function render(scrollToToday = false) {
   const firstDay = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), 1);
   const offset = (firstDay.getDay() + 6) % 7; // Monday-start offset
 
-  // blank cells before day 1
+  // ✅ blank cells before day 1 (must match dayCell sizing)
   for (let i = 0; i < offset; i++) {
     const spacer = document.createElement("div");
+    spacer.className = "dayCell spacer";
+    spacer.setAttribute("aria-hidden", "true");
     grid.appendChild(spacer);
   }
 

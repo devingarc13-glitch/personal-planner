@@ -146,7 +146,7 @@ button:hover{ border-color: var(--accent); }
   display:grid;
   grid-template-columns: repeat(7, var(--dayW));
   gap: var(--gap);
-  margin-top:0; /* keep alignment with weekdays */
+  margin-top:0;
   grid-auto-rows: minmax(160px, auto);
   align-items:start;
 }
@@ -238,9 +238,9 @@ h3{
 /* ===== iPHONE / MOBILE FIXES (NO TRANSFORM — KEEP PAN + ZOOM) ===== */
 @media (max-width: 700px){
 
-  /* 🔒 lock BOTH weekdays and grid to the exact same "big" column sizing */
+  /* ✅ fixed column width prevents drift between header + grid */
   :root{
-    --dayW: minmax(120px, 1fr);
+    --dayW: 120px;  /* was minmax(...) */
     --gap: 10px;
   }
 
@@ -249,7 +249,7 @@ h3{
     -webkit-overflow-scrolling:touch;
   }
 
-  /* IMPORTANT: make both lines use identical scroll width */
+  /* make both rows share identical scroll width */
   .weekdays,
   #monthGrid{
     width:max-content;
@@ -259,13 +259,15 @@ h3{
     font-size:11px;
     margin: 0 0 8px 0;
   }
+
+  /* ✅ remove min-width that can fight the grid sizing */
   .weekdays div{
-    min-width:120px;
+    min-width:0;
     white-space:nowrap;
     text-align:center;
   }
 
-  /* show more rows on iPhone */
+  /* show more rows */
   #monthGrid{
     grid-auto-rows: minmax(120px, auto);
     align-items:start;

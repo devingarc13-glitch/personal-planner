@@ -232,7 +232,7 @@ h3{
 /* ===== iPHONE / MOBILE FIXES (NO TRANSFORM — KEEP PAN + ZOOM) ===== */
 @media (max-width: 700px){
 
-  /* mobile uses the big "old view" sizing — variables lock weekdays + grid together */
+  /* 🔒 lock BOTH weekdays and grid to the exact same "big" column sizing */
   :root{
     --dayW: minmax(120px, 1fr);
     --gap: 10px;
@@ -243,29 +243,40 @@ h3{
     -webkit-overflow-scrolling:touch;
   }
 
-  .weekdays{
+  /* IMPORTANT: make both lines use identical scroll width */
+  .weekdays,
+  #monthGrid{
     width:max-content;
+  }
+
+  .weekdays{
     font-size:11px;
     margin: 0 0 8px 0;
   }
   .weekdays div{
-    min-width:120px;
+    min-width:120px;        /* matches minmax(120px, 1fr) */
     white-space:nowrap;
     text-align:center;
   }
 
+  /* ✅ show more rows on iPhone (still big boxes, just not super tall) */
   #monthGrid{
-    width:max-content;
-    grid-auto-rows: minmax(160px, auto);
+    grid-auto-rows: minmax(120px, auto);
     align-items:start;
   }
 
   .dayCell{
-    min-height:160px;
-    padding:10px;
+    min-height:120px;
+    padding:8px;
     border-radius:12px;
+    gap:4px;
   }
 
   .dayNum{ font-size:11px; }
-  .dayNotes{ font-size:13px; line-height:1.4; }
+
+  .dayNotes{
+    font-size:13px;
+    line-height:1.35;
+    min-height:40px;
+  }
 }

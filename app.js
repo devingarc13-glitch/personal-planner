@@ -12,7 +12,6 @@ let calendarType = "personal"; // personal | work | school
 const pad = (n) => String(n).padStart(2, "0");
 const monthKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
 const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
 const todayISO = () => iso(new Date());
 
 // ---------- STORAGE KEYS ----------
@@ -26,7 +25,6 @@ function saveStatus(){
 }
 
 function autoGrow(ta){
-  // iPhone: smaller minimum so day boxes don't get tall when empty
   const isMobile = window.matchMedia("(max-width: 700px)").matches;
   const MIN = isMobile ? 60 : 110;
 
@@ -72,27 +70,37 @@ function render(scrollToToday = false) {
   const grid = $("monthGrid");
   grid.innerHTML = "";
 
-  // month notes for this calendarType + month
+  // month notes
   const monthNotesEl = $("monthNotes");
   monthNotesEl.value = localStorage.getItem(kMonth()) || "";
 
   const daysInMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() + 1, 0).getDate();
   const firstDay = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), 1);
-  const offset = (firstDay.getDay() + 6) % 7; // Monday-start offset
 
-  // ✅ blank cells before day 1 (must match dayCell sizing)
-  for (let i = 0; i < offset; i++) {
-    const spacer = document.createElement("div");
-    spacer.className = "dayCell spacer";
-    spacer.setAttribute("aria-hidden", "true");
-    grid.appendChild(spacer);
-  }
+  // Monday-start offset (Mon=0..Sun=6)
+  const offset = (firstDay.getDay() + 6) % 7;
 
   const tISO = todayISO();
   let todayCell = null;
 
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), d);
+  // ✅ Always render a full 6-week grid (42 cells) so you never have “missing” last rows
+  const TOTAL_CELLS = 42;
+
+  // Build a list of 42 slots: first = offset spacers, then days, then trailing spacers
+  let dayNumber = 1;
+
+  for (let slot = 0; slot < TOTAL_CELLS; slot++) {
+    const isSpacer = slot < offset || dayNumber > daysInMonth;
+
+    if (isSpacer) {
+      const spacer = document.createElement("div");
+      spacer.className = "dayCell spacer";
+      spacer.setAttribute("aria-hidden", "true");
+      grid.appendChild(spacer);
+      continue;
+    }
+
+    const date = new Date(activeMonth.getFullYear(), activeMonth.getMonth(), dayNumber);
     const thisISO = iso(date);
 
     const cell = document.createElement("div");
@@ -103,7 +111,7 @@ function render(scrollToToday = false) {
 
     const num = document.createElement("div");
     num.className = "dayNum";
-    num.textContent = d;
+    num.textContent = dayNumber;
 
     const notes = document.createElement("textarea");
     notes.className = "dayNotes";
@@ -128,6 +136,8 @@ function render(scrollToToday = false) {
     grid.appendChild(cell);
 
     if (thisISO === tISO) todayCell = cell;
+
+    dayNumber++;
   }
 
   if (scrollToToday && todayCell) {

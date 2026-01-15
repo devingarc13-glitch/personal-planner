@@ -165,6 +165,12 @@ button:hover{ border-color: var(--accent); }
   min-height:160px;
 }
 
+/* ✅ spacer cells: take up space but not visible */
+.dayCell.spacer{
+  visibility:hidden;
+  pointer-events:none;
+}
+
 /* Today highlight */
 .dayCell.today{
   border-color: var(--accent);
@@ -254,12 +260,12 @@ h3{
     margin: 0 0 8px 0;
   }
   .weekdays div{
-    min-width:120px;        /* matches minmax(120px, 1fr) */
+    min-width:120px;
     white-space:nowrap;
     text-align:center;
   }
 
-  /* ✅ show more rows on iPhone (still big boxes, just not super tall) */
+  /* show more rows on iPhone */
   #monthGrid{
     grid-auto-rows: minmax(120px, auto);
     align-items:start;

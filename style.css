@@ -225,10 +225,10 @@ h3{
   padding:12px;
 }
 
-/* ===== iPHONE / MOBILE FIXES ===== */
+/* ===== iPHONE / MOBILE FIXES (FULL CALENDAR + TRUE SQUARES) ===== */
 @media (max-width: 700px){
 
-  /* iPhone: show full calendar width by default */
+  /* full calendar fits screen */
   .calScroll{
     overflow-x:hidden;
   }
@@ -250,23 +250,29 @@ h3{
     grid-template-columns: repeat(7, 1fr);
     width:100%;
     gap:8px;
-
     margin-top:0; /* keep weekday row aligned */
-    grid-auto-rows: minmax(100px, auto); /* shorter rows (more square) */
   }
 
+  /* FORCE SQUARE DAY CELLS */
   .dayCell{
-    min-height:100px; /* shorter cells (more square) */
-    padding:10px;
+    aspect-ratio: 1 / 1;   /* <-- the key */
+    min-height:0;          /* don't force tall cells */
+    padding:8px;
     border-radius:12px;
+    gap:4px;
   }
 
   .dayNum{
     font-size:11px;
   }
 
+  /* textarea must NOT force height */
   .dayNotes{
+    min-height:0;
+    height:100%;
+    flex:1;
+    overflow:hidden;
     font-size:13px;
-    line-height:1.4;
+    line-height:1.35;
   }
 }

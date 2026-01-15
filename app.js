@@ -26,9 +26,9 @@ function saveStatus(){
 }
 
 function autoGrow(ta){
-  // iPhone: allow true squares by not forcing a minimum textarea height
+  // iPhone: smaller minimum so day boxes don't get tall when empty
   const isMobile = window.matchMedia("(max-width: 700px)").matches;
-  const MIN = isMobile ? 0 : 110;
+  const MIN = isMobile ? 60 : 110;
 
   ta.style.height = "0px";
   ta.style.height = Math.max(ta.scrollHeight, MIN) + "px";

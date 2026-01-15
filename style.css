@@ -225,10 +225,10 @@ h3{
   padding:12px;
 }
 
-/* ===== iPHONE / MOBILE FIXES (FULL CALENDAR + ALIGNED WEEKDAYS) ===== */
+/* ===== iPHONE / MOBILE FIXES ===== */
 @media (max-width: 700px){
 
-  /* iPhone: show full calendar width by default (no sideways swipe needed) */
+  /* iPhone: show full calendar width by default */
   .calScroll{
     overflow-x:hidden;
   }
@@ -251,12 +251,12 @@ h3{
     width:100%;
     gap:8px;
 
-    margin-top:0; /* IMPORTANT: fixes weekday row alignment on iPhone */
-    grid-auto-rows: minmax(140px, auto);
+    margin-top:0; /* keep weekday row aligned */
+    grid-auto-rows: minmax(100px, auto); /* shorter rows (more square) */
   }
 
   .dayCell{
-    min-height:140px;
+    min-height:100px; /* shorter cells (more square) */
     padding:10px;
     border-radius:12px;
   }

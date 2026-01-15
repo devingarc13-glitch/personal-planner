@@ -225,22 +225,16 @@ h3{
   padding:12px;
 }
 
-/* ===== iPHONE / MOBILE FIXES (FIT VIEW LIKE YOUR OLD SCREENSHOT) ===== */
+/* ===== iPHONE / MOBILE FIXES (NO TRANSFORM — KEEP PAN + ZOOM) ===== */
 @media (max-width: 700px){
 
-  :root{
-    --calScale: 0.62; /* tweak: 0.58 smaller (more fits), 0.68 bigger */
-  }
-
-  /* scale the calendar block so the full month is visible */
+  /* allow pan if needed */
   .calScroll{
-    overflow-x:hidden;
-    transform: scale(var(--calScale));
-    transform-origin: top left;
-    width: calc(100% / var(--calScale));
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
   }
 
-  /* bigger boxes like before */
+  /* use the "big box" grid like your old view */
   .weekdays{
     grid-template-columns: repeat(7, minmax(120px, 1fr));
     width:max-content;
@@ -269,12 +263,6 @@ h3{
     border-radius:12px;
   }
 
-  .dayNum{
-    font-size:11px;
-  }
-
-  .dayNotes{
-    font-size:13px;
-    line-height:1.4;
-  }
+  .dayNum{ font-size:11px; }
+  .dayNotes{ font-size:13px; line-height:1.4; }
 }

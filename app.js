@@ -26,7 +26,10 @@ function saveStatus(){
 }
 
 function autoGrow(ta){
-  const MIN = 110; // match CSS min-height
+  // Desktop can be taller; iPhone needs smaller so boxes aren't skyscrapers
+  const isMobile = window.matchMedia("(max-width: 700px)").matches;
+  const MIN = isMobile ? 40 : 110;
+
   ta.style.height = "0px";
   ta.style.height = Math.max(ta.scrollHeight, MIN) + "px";
 }

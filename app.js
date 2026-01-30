@@ -332,7 +332,7 @@ function attachGlobalSync(){
 
   clearUnsubs(unsubGlobals);
 
-  const ids = ["notesPersonal","notesWork","notesSchool","doAsap","doEventually","buyNow","buyEventually"];
+  const ids = ["notesPersonal","notesHome","notesWork","notesSchool","doAsap","doEventually","buyNow","buyEventually"];
   ids.forEach((id) => {
     const key = kGlobal(id);
     const unsub = listenKey(key, (val) => {

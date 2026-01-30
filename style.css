@@ -298,3 +298,76 @@ h3{
     min-height: 45vh;  /* adjust: 35vh smaller, 55vh bigger */
   }
 }
+
+/* ===== Quick Links Bars (Notes / To-Do / Buy) ===== */
+.quickLinksBar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin: 12px 0 12px;
+  padding: 8px 10px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background: rgba(21,28,36,.35);
+  backdrop-filter: blur(6px);
+}
+
+.qlLinks{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+  white-space:nowrap;
+  flex:1;
+  padding-bottom:2px;
+}
+
+.qlLinks::-webkit-scrollbar{ height: 8px; }
+.qlLinks::-webkit-scrollbar-thumb{
+  background: rgba(159,176,195,.22);
+  border-radius: 999px;
+}
+
+.qlChip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background: rgba(21,28,36,.65);
+  color: var(--text);
+  text-decoration:none;
+  font-size:14px;
+}
+
+.qlChip:hover{
+  border-color: var(--accent);
+}
+
+.qlRemove{
+  border:none;
+  background:transparent;
+  color: var(--muted);
+  padding:0;
+  cursor:pointer;
+  font-size:16px;
+  line-height:1;
+}
+.qlRemove:hover{ color: var(--text); }
+
+.qlAdd{
+  width:36px;
+  height:32px;
+  border-radius:12px;
+  padding:0;
+  font-size:18px;
+  line-height:1;
+}
+
+/* Mobile: keep it slim */
+@media (max-width: 700px){
+  .quickLinksBar{ padding: 8px; }
+  .qlChip{ font-size:13px; padding: 6px 9px; }
+}

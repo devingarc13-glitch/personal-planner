@@ -285,6 +285,7 @@ function wireGlobal(id) {
 }
 
 wireGlobal("notesPersonal");
+wireGlobal("notesHome");
 wireGlobal("notesWork");
 wireGlobal("notesSchool");
 wireGlobal("doAsap");

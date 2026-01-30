@@ -83,6 +83,44 @@ function autoGrow(ta){
 }
 
 /* =========================
+   DESKTOP-ONLY: PERSIST TEXTAREA SIZES (NEW)
+   Saves manual resize heights in localStorage (NOT cloud)
+   ========================= */
+function isDesktop(){
+  return !window.matchMedia("(max-width: 700px)").matches;
+}
+const kSize = (id) => `planner:ui:taSize:${id}`;
+
+function restoreTextareaSize(el){
+  if (!el || !el.id) return;
+  if (!isDesktop()) return; // ✅ do nothing on phone
+  const h = localStorage.getItem(kSize(el.id));
+  if (h) el.style.height = h; // stored as "###px"
+}
+
+function saveTextareaSize(el){
+  if (!el || !el.id) return;
+  if (!isDesktop()) return; // ✅ do nothing on phone
+  const h = getComputedStyle(el).height;
+  localStorage.setItem(kSize(el.id), h);
+}
+
+function wireTextareaSizePersistence(id){
+  const el = $(id);
+  if (!el) return;
+
+  // restore on load (desktop only)
+  restoreTextareaSize(el);
+
+  // save after manual resize (release drag handle)
+  el.addEventListener("pointerup", () => saveTextareaSize(el));
+  el.addEventListener("mouseup", () => saveTextareaSize(el));
+
+  // also save when leaving the field (covers some browsers)
+  el.addEventListener("blur", () => saveTextareaSize(el));
+}
+
+/* =========================
    STORAGE LAYER (CHANGED)
    localStorage + Firestore mirror
    ========================= */
@@ -214,8 +252,6 @@ function render(scrollToToday = false) {
     notes.className = "dayNotes";
     notes.value = localStorage.getItem(kDay(date)) || "";
 
-    // ✅ CHANGE: don't autoGrow before it's in the DOM (can read wrong height on re-render)
-
     notes.addEventListener("input", () => {
       writeKey(kDay(date), notes.value);
       notes.style.height = "auto";
@@ -231,7 +267,7 @@ function render(scrollToToday = false) {
 
     grid.appendChild(cell);
 
-    // ✅ CHANGE: grow after layout is real, so it stays expanded when revisiting the month
+    // ✅ grow AFTER layout is real
     requestAnimationFrame(() => autoGrow(notes));
 
     if (thisISO === tISO) todayCell = cell;
@@ -299,6 +335,17 @@ wireGlobal("doEventually");
 wireGlobal("buyNow");
 wireGlobal("buyEventually");
 
+/* ✅ Desktop-only textarea size persistence for your main boxes */
+wireTextareaSizePersistence("monthNotes");
+wireTextareaSizePersistence("notesPersonal");
+wireTextareaSizePersistence("notesHome");
+wireTextareaSizePersistence("notesWork");
+wireTextareaSizePersistence("notesSchool");
+wireTextareaSizePersistence("doAsap");
+wireTextareaSizePersistence("doEventually");
+wireTextareaSizePersistence("buyNow");
+wireTextareaSizePersistence("buyEventually");
+
 /* =========================
    QUICK LINKS (NEW)
    - separate bars: notes / todo / buy
@@ -334,7 +381,6 @@ function renderLinks(which){
   const links = loadLinks(which);
   host.innerHTML = "";
 
-  // If empty, keep it visually slim (no placeholder text).
   links.forEach((item, idx) => {
     const a = document.createElement("a");
     a.className = "qlChip";
@@ -343,7 +389,6 @@ function renderLinks(which){
     a.rel = "noopener noreferrer";
     a.textContent = item.label;
 
-    // remove button
     const rm = document.createElement("button");
     rm.className = "qlRemove";
     rm.type = "button";
@@ -355,7 +400,6 @@ function renderLinks(which){
       e.stopPropagation();
       const next = loadLinks(which).filter((_, i) => i !== idx);
       saveLinks(which, next);
-      // render will update via listener, but also do immediate feedback:
       renderLinks(which);
     });
 
@@ -386,7 +430,6 @@ function wireQuickLinksUI(){
   if (addTodo)  addTodo.addEventListener("click", () => promptAddLink("todo"));
   if (addBuy)   addBuy.addEventListener("click", () => promptAddLink("buy"));
 
-  // initial render from local while waiting for sync
   renderLinks("notes");
   renderLinks("todo");
   renderLinks("buy");
@@ -400,7 +443,6 @@ function attachQuickLinksSync(){
   ["notes","todo","buy"].forEach((which) => {
     const key = kQuickLinks(which);
     const unsub = listenKey(key, (val) => {
-      // validate + re-render
       localStorage.setItem(key, val || "[]");
       renderLinks(which);
     });
@@ -415,14 +457,12 @@ function attachQuickLinksSync(){
 function attachMonthAndDaySync(){
   if (!uid) return;
 
-  // month listener (reset on month/type change)
   if (unsubMonth) { try { unsubMonth(); } catch {} }
   unsubMonth = listenKey(kMonth(), (val) => {
     const el = $("monthNotes");
     if (el && el.value !== val) el.value = val;
   });
 
-  // day listeners (reset on re-render/month/type change)
   clearUnsubs(unsubDays);
 
   const daysInMonth = new Date(activeMonth.getFullYear(), activeMonth.getMonth() + 1, 0).getDate();
@@ -435,7 +475,6 @@ function attachMonthAndDaySync(){
       if (!ta) return;
       if (ta.value !== val) {
         ta.value = val;
-        // ✅ CHANGE: grow after layout is ready (prevents collapse when revisiting month)
         requestAnimationFrame(() => autoGrow(ta));
       }
     });
@@ -482,9 +521,8 @@ onAuthStateChanged(auth, (user) => {
   uid = user.uid;
   saveStatus("Synced");
 
-  // start listeners after login
   attachGlobalSync();
-  attachQuickLinksSync(); // ✅ quick links sync
+  attachQuickLinksSync();
   render();
   attachMonthAndDaySync();
 });

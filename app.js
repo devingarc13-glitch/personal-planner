@@ -214,8 +214,7 @@ function render(scrollToToday = false) {
     notes.className = "dayNotes";
     notes.value = localStorage.getItem(kDay(date)) || "";
 
-    notes.style.height = "auto";
-    autoGrow(notes);
+    // ✅ CHANGE: don't autoGrow before it's in the DOM (can read wrong height on re-render)
 
     notes.addEventListener("input", () => {
       writeKey(kDay(date), notes.value);
@@ -231,6 +230,9 @@ function render(scrollToToday = false) {
     });
 
     grid.appendChild(cell);
+
+    // ✅ CHANGE: grow after layout is real, so it stays expanded when revisiting the month
+    requestAnimationFrame(() => autoGrow(notes));
 
     if (thisISO === tISO) todayCell = cell;
 
@@ -433,7 +435,8 @@ function attachMonthAndDaySync(){
       if (!ta) return;
       if (ta.value !== val) {
         ta.value = val;
-        autoGrow(ta);
+        // ✅ CHANGE: grow after layout is ready (prevents collapse when revisiting month)
+        requestAnimationFrame(() => autoGrow(ta));
       }
     });
     unsubDays.push(unsub);

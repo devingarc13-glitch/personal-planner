@@ -287,4 +287,14 @@ h3{
     line-height:1.35;
     min-height:40px;
   }
+
+  /* ✅ FIX: make Notes/To-Do/Buy not tiny on phone */
+  .twoCol{
+    grid-template-columns: 1fr; /* stack cards vertically on mobile */
+  }
+
+  /* ✅ FIX: make month notes + all big textareas taller on phone */
+  textarea{
+    min-height: 45vh;  /* adjust: 35vh smaller, 55vh bigger */
+  }
 }

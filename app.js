@@ -39,6 +39,9 @@ let unsubGlobals = [];
 let unsubMonth = null;
 let unsubDays = [];
 
+// ✅ Quick Links unsub holders
+let unsubQuickLinks = [];
+
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
 const statusEl = $("status");
@@ -60,6 +63,9 @@ const todayISO = () => iso(new Date());
 const kDay = (date) => `planner:${calendarType}:day:${iso(date)}`;
 const kMonth = () => `planner:${calendarType}:month:${monthKey(activeMonth)}`;
 const kGlobal = (id) => `planner:global:${id}`;
+
+// ✅ Quick Links keys (separate sets)
+const kQuickLinks = (which) => `planner:global:quickLinks:${which}`; // notes | todo | buy
 
 // ---------- STATUS ----------
 function saveStatus(label = "Saved"){
@@ -212,9 +218,7 @@ function render(scrollToToday = false) {
     autoGrow(notes);
 
     notes.addEventListener("input", () => {
-      // 🔁 cloud + local
       writeKey(kDay(date), notes.value);
-
       notes.style.height = "auto";
       autoGrow(notes);
     });
@@ -294,6 +298,115 @@ wireGlobal("buyNow");
 wireGlobal("buyEventually");
 
 /* =========================
+   QUICK LINKS (NEW)
+   - separate bars: notes / todo / buy
+   - stored as JSON string via writeKey/listenKey
+   ========================= */
+
+// Parse + normalize URL
+function normalizeUrl(url){
+  let u = (url || "").trim();
+  if (!u) return "";
+  if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+  return u;
+}
+
+function loadLinks(which){
+  const raw = localStorage.getItem(kQuickLinks(which)) || "[]";
+  try {
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter(x => x && x.label && x.url) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveLinks(which, links){
+  writeKey(kQuickLinks(which), JSON.stringify(links));
+}
+
+function renderLinks(which){
+  const host = $(`ql-${which}-links`);
+  if (!host) return;
+
+  const links = loadLinks(which);
+  host.innerHTML = "";
+
+  // If empty, keep it visually slim (no placeholder text).
+  links.forEach((item, idx) => {
+    const a = document.createElement("a");
+    a.className = "qlChip";
+    a.href = item.url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = item.label;
+
+    // remove button
+    const rm = document.createElement("button");
+    rm.className = "qlRemove";
+    rm.type = "button";
+    rm.textContent = "×";
+    rm.title = "Remove";
+
+    rm.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const next = loadLinks(which).filter((_, i) => i !== idx);
+      saveLinks(which, next);
+      // render will update via listener, but also do immediate feedback:
+      renderLinks(which);
+    });
+
+    a.appendChild(rm);
+    host.appendChild(a);
+  });
+}
+
+function promptAddLink(which){
+  const label = (prompt("Link name (example: USAA, Canvas, Amazon):") || "").trim();
+  if (!label) return;
+
+  const url = normalizeUrl(prompt("Paste the link (example: usaa.com):") || "");
+  if (!url) return;
+
+  const links = loadLinks(which);
+  links.push({ label, url });
+  saveLinks(which, links);
+  renderLinks(which);
+}
+
+function wireQuickLinksUI(){
+  const addNotes = $("ql-notes-add");
+  const addTodo  = $("ql-todo-add");
+  const addBuy   = $("ql-buy-add");
+
+  if (addNotes) addNotes.addEventListener("click", () => promptAddLink("notes"));
+  if (addTodo)  addTodo.addEventListener("click", () => promptAddLink("todo"));
+  if (addBuy)   addBuy.addEventListener("click", () => promptAddLink("buy"));
+
+  // initial render from local while waiting for sync
+  renderLinks("notes");
+  renderLinks("todo");
+  renderLinks("buy");
+}
+
+function attachQuickLinksSync(){
+  if (!uid) return;
+
+  clearUnsubs(unsubQuickLinks);
+
+  ["notes","todo","buy"].forEach((which) => {
+    const key = kQuickLinks(which);
+    const unsub = listenKey(key, (val) => {
+      // validate + re-render
+      localStorage.setItem(key, val || "[]");
+      renderLinks(which);
+    });
+    unsubQuickLinks.push(unsub);
+  });
+}
+
+/* =========================
    CLOUD LISTENERS (ADDED)
    keeps boxes growing + clickable
    ========================= */
@@ -320,7 +433,7 @@ function attachMonthAndDaySync(){
       if (!ta) return;
       if (ta.value !== val) {
         ta.value = val;
-        autoGrow(ta); // ✅ cube growth preserved
+        autoGrow(ta);
       }
     });
     unsubDays.push(unsub);
@@ -368,6 +481,7 @@ onAuthStateChanged(auth, (user) => {
 
   // start listeners after login
   attachGlobalSync();
+  attachQuickLinksSync(); // ✅ quick links sync
   render();
   attachMonthAndDaySync();
 });
@@ -376,4 +490,5 @@ onAuthStateChanged(auth, (user) => {
    INIT (UNCHANGED)
    ========================= */
 render();
+wireQuickLinksUI(); // ✅ works even before login (local)
 startLogin();
